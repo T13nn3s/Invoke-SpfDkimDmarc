@@ -9,11 +9,11 @@
 
 .COMPANYNAME Avantage IT
 
-.COPYRIGHT
+.COPYRIGHT (c) 2021 Martien van Dijk @ All rights reserved.
 
 .TAGS
 
-.LICENSEURI
+.LICENSEURI https://github.com/T13nn3s/DomainHealthChecker/blob/main/LICENSE
 
 .PROJECTURI
 
@@ -27,9 +27,10 @@
 
 .RELEASENOTES
 
-
 .PRIVATEDATA
-
+    PSData = @{
+        Tags = @('Windows','Email','Security','Email Security','SPF','DKIM','DMARC')
+        ProjectUri = 'https://github.com/T13nn3s/DomainHealthChecker'
 #>
 
 <# 
@@ -138,7 +139,7 @@ function DomainHealthChecker {
             # Check DKIM-record
             $DKIM = $null
             $CnameSelector1 = Resolve-DnsName -Type CNAME -Name selector1._domainkey.$Domain -server $Server -ErrorAction SilentlyContinue
-            if ($CnameSelector1.NameHost -notcontains "domainkey") {
+            if ($CnameSelector1.Name -notmatch "domainkey") {
                 $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
             }
             else {
@@ -176,9 +177,7 @@ function DomainHealthChecker {
             }
         }
         if ($Name) {
-            foreach ($Domain in $Name) {
-                StartDomainHealthCheck -Domain $Name
-            }
+            StartDomainHealthCheck -Domain $Name
         }      
     }
     end {}
