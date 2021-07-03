@@ -7,6 +7,127 @@
 
 <p align="center">
   </p>
+  
+:information_source:**The current release is only supporting PowerShell 7, we will update the script so that it will be compatibel with version 5.1**:information_source:
 
 # DomainHealthChecker
-PowerShell Script for checking SPF, DKIM and DMARC-record.
+Is your email domain properly protected against abuse, such as email spoofing? This form of abuse can cause (image) damage to an organization. The PowerShell script DomainHealthChecker.ps1 checks the SPF, DKIM and DMARC record of one or more email domains and gives advice if necessary. 
+
+In short: this PowerShell Script can you use for checking SPF, DKIM and DMARC-record.
+
+## Script installation
+
+```
+PS C:\> Install-Script -Name DomainHealthChecker -RequiredVersion 1.3.1
+```
+With this command you can download and install the script from the PowerShellGallery.
+
+## Update script to the latest version
+
+```
+PS C:\> Install-Script DomainHealthChecker -Force
+```
+To delete the current version and the latest version, run `Install-Script`, and add the `-Force` parameter.
+
+
+## SYNOPSIS
+The `DomainHealthChecker` cmdlet performs a DNS query on the SPF-record, DKIM-record and DMARC-record for the specified domain name. This cmdlet takes the output and is adding some advisory if there is room for improvements for the SPF or DMARC-record.
+
+## SYNTAX
+
+```
+DomainHealthChecker [-Name] <String> [-File] <string] [-Server <String[]>] [<CommonParameters>]
+```
+## EXAMPLES
+
+### EXAMPLE 1
+```
+PS C:\> DomainHealthChecker -Name binsec.nl
+```
+This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record for the domain binsec.nl.
+
+### EXAMPLE 2
+```
+PS C:\> DomainHealthChecker -Name binsec.nl -Server 10.0.0.1
+```
+This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record for the domain binsec.nl against the DNS server at 10.0.0.1.
+
+### EXAMPLE 3
+```
+PS C:\> DomainHealthChecker -File $env:USERPROFILE\Desktop\domain_list.txt
+```
+
+This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
+
+### EXAMPLE 4
+```
+PS C:\> DomainHealthChecker -File $env:USERPROFILE\Desktop\domain_list.txt | Export-Csv destination.csv -NoTypeInformation -Delimiter ";"
+```
+
+This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
+
+## PARAMETERS
+
+
+### -Name
+Specifies the domain for resolving the SPF, DKIM and DMARC-record.
+
+```yaml
+Type: String
+Parameter Sets: domain
+Aliases: 
+
+Required: True
+Position: 0
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+### -File
+Retrieves a list of domain names from the specified file and checks the SPF, DKIM, and DMARC-records against these domains.
+
+```yaml
+Type: String
+Parameter Sets: file
+Aliases: 
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -Server
+Specifies the IP addresses or host names of the DNS servers to be queried.
+By default the interface DNS servers are queried if this parameter is not supplied.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: 
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+## OUTPUTS
+
+### None
+
+## NOTES
+
+## RELATED LINKS
+
+[Script sharing post on Reddit](https://www.reddit.com/r/PowerShell/comments/occgr2/powershell_script_for_checking_spf_dkim_and_dmarc/)
+[Script on PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
