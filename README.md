@@ -66,5 +66,68 @@ PS C:\> DomainHealthChecker -File $env:USERPROFILE\Desktop\domain_list.txt | Exp
 
 This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
 
+## PARAMETERS
 
 
+### -Name
+Specifies the domain for resolving the SPF, DKIM and DMARC-record.
+
+```yaml
+Type: String
+Parameter Sets: domain
+Aliases: 
+
+Required: True
+Position: 0
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+### -File
+Retrieves a list of domain names from the specified file and checks the SPF, DKIM, and DMARC-records against these domains.
+
+```yaml
+Type: String
+Parameter Sets: file
+Aliases: 
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -Server
+Specifies the IP addresses or host names of the DNS servers to be queried.
+By default the interface DNS servers are queried if this parameter is not supplied.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: 
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+## OUTPUTS
+
+### None
+
+## NOTES
+
+## RELATED LINKS
+
+[Script sharing post on Reddit](https://www.reddit.com/r/PowerShell/comments/occgr2/powershell_script_for_checking_spf_dkim_and_dmarc/)
+[Script on PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
