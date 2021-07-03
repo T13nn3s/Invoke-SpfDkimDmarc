@@ -11,11 +11,11 @@
 
 .COPYRIGHT (c) 2021 Martien van Dijk @ All rights reserved.
 
-.TAGS
+.TAGS @('Windows','Email','Security','Email Security','SPF','DKIM','DMARC')
 
 .LICENSEURI https://github.com/T13nn3s/DomainHealthChecker/blob/main/LICENSE
 
-.PROJECTURI
+.PROJECTURI 'https://github.com/T13nn3s/DomainHealthChecker'
 
 .ICONURI
 
@@ -28,9 +28,7 @@
 .RELEASENOTES
 
 .PRIVATEDATA
-    PSData = @{
-        Tags = @('Windows','Email','Security','Email Security','SPF','DKIM','DMARC')
-        ProjectUri = 'https://github.com/T13nn3s/DomainHealthChecker'
+
 #>
 
 <# 
@@ -42,9 +40,6 @@
 
 Param()
 
-
-#Requires -Version 7
-#$ErrorActionPreference = "SilentlyContinue"
 function DomainHealthChecker {
     [CmdletBinding()]
     param (
