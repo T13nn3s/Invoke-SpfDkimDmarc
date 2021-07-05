@@ -79,6 +79,7 @@ function Show-SpfDkimDmarc {
             [string]$SpfAdvisory
             [string]$DmarcRecord
             [string]$DmarcAdvisory
+            [string]$DkimSelector
             [string]$DkimRecord
             [string]$DkimAdvisory
         
@@ -89,6 +90,7 @@ function Show-SpfDkimDmarc {
                 [string]$SpfAdvisory,
                 [string]$DMARC,
                 [string]$DmarcAdvisory,
+                [string]$DkimSelector,
                 [string]$DKIM,
                 [string]$DkimAdvisory
             ) {
@@ -97,6 +99,7 @@ function Show-SpfDkimDmarc {
                 $this.SpfAdvisory = $SpfAdvisory
                 $this.DmarcRecord = $DMARC
                 $this.DmarcAdvisory = $DmarcAdvisory
+                $this.DkimSelector = $DkimSelector
                 $this.DkimRecord = $DKIM
                 $this.DkimAdvisory = $DkimAdvisory
             }
@@ -120,16 +123,16 @@ function Show-SpfDkimDmarc {
             }
             Else {
                 switch -Regex ($SPF) {
-                    ('~all') {
+                    '~all' {
                         $SpfAdvisory = "An SPF-record is configured but the policy is not sufficiently strict."
                     }
-                    ('-all') {
+                    '-all' {
                         $SpfAdvisory = "An SPF-record is configured and the policy is sufficiently strict."
                     }
-                    ('^?all') {
+                    "\?all" {
                         $SpfAdvisory = "Your domain has a valid SPF record but your policy is not effective enough."
                     }
-                    ('^+all') {
+                    '\+all' {
                         $SpfAdvisory = "Your domain has a valid SPF record but your policy is not effective enough."
                     }
                     Default {
@@ -146,12 +149,13 @@ function Show-SpfDkimDmarc {
                     $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
                 }
                 elseif ($DKIM -match "v=DKIM1") {
-                    $DkimAdvisory = "DKIM-record is valid."
+                    $DkimAdvisory = "DKIM-record found."
                     $DkimAdvisory
                 }
             }
             Else {
-                $CnameSelector1 = Resolve-DnsName -Type CNAME -Name selector1._domainkey.$Domain -server $Server -ErrorAction SilentlyContinue
+                $DkimSelector = "selector1" # Microsoft
+                $CnameSelector1 = Resolve-DnsName -Type CNAME -Name "$($DkimSelector)._domainkey.$Domain" -server $Server -ErrorAction SilentlyContinue
                 if ($CnameSelector1.Name -notmatch "domainkey") {
                     $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                 }
@@ -185,7 +189,7 @@ function Show-SpfDkimDmarc {
                 }
             }
 
-            $ReturnValues = [SpfDkimDmarc]::New($Domain, $SPF, $SpfAdvisory, $DMARC, $DmarcAdvisory, $DKIM, $DkimAdvisory)
+            $ReturnValues = [SpfDkimDmarc]::New($Domain, $SPF, $SpfAdvisory, $DMARC, $DmarcAdvisory, $DkimSelector, $DKIM, $DkimAdvisory)
 
             $ReturnValues  
         }
