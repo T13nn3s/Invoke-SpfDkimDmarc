@@ -15,7 +15,7 @@
 
 .LICENSEURI https://github.com/T13nn3s/DomainHealthChecker/blob/main/LICENSE
 
-.PROJECTURI 'https://github.com/T13nn3s/DomainHealthChecker'
+.PROJECTURI https://github.com/T13nn3s/Show-SpfDkimDmarc
 
 .ICONURI
 
@@ -25,7 +25,7 @@
 
 .EXTERNALSCRIPTDEPENDENCIES
 
-.RELEASENOTES
+.RELEASENOTES https://github.com/T13nn3s/Show-SpfDkimDmarc
 
 .PRIVATEDATA
 
