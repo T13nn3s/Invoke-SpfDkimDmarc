@@ -8,26 +8,16 @@
 <p align="center">
   </p>
   
-:information_source:**The current release is only supporting PowerShell 7, we will update the script so that it will be compatibel with version 5.1**:information_source:
-
 # DomainHealthChecker
 Is your email domain properly protected against abuse, such as email spoofing? This form of abuse can cause (image) damage to an organization. The PowerShell script DomainHealthChecker.ps1 checks the SPF, DKIM and DMARC record of one or more email domains and gives advice if necessary. 
 
 In short: this PowerShell Script can you use for checking SPF, DKIM and DMARC-record.
 
-## Script installation
+## Module installation
 
 ```
-PS C:\> Install-Script -Name DomainHealthChecker -RequiredVersion 1.3.1
+PS C:\> Import-Module .\DomainHealthChecker.psm1
 ```
-With this command you can download and install the script from the PowerShellGallery.
-
-## Update script to the latest version
-
-```
-PS C:\> Install-Script DomainHealthChecker -Force
-```
-To delete the current version and the latest version, run `Install-Script`, and add the `-Force` parameter.
 
 
 ## SYNOPSIS
@@ -36,32 +26,32 @@ The `DomainHealthChecker` cmdlet performs a DNS query on the SPF-record, DKIM-re
 ## SYNTAX
 
 ```
-DomainHealthChecker [-Name] <String> [-File] <string] [-Server <String[]>] [<CommonParameters>]
+Show-SpfDkimDmarc [-Name] <String> [-File] <string] [-Server <String[]>] [<CommonParameters>]
 ```
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-PS C:\> DomainHealthChecker -Name binsec.nl
+PS C:\> Show-SpfDkimDmarc -Name binsec.nl
 ```
 This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record for the domain binsec.nl.
 
 ### EXAMPLE 2
 ```
-PS C:\> DomainHealthChecker -Name binsec.nl -Server 10.0.0.1
+PS C:\> Show-SpfDkimDmarc -Name binsec.nl -Server 10.0.0.1
 ```
 This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record for the domain binsec.nl against the DNS server at 10.0.0.1.
 
 ### EXAMPLE 3
 ```
-PS C:\> DomainHealthChecker -File $env:USERPROFILE\Desktop\domain_list.txt
+PS C:\> Show-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt
 ```
 
 This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
 
 ### EXAMPLE 4
 ```
-PS C:\> DomainHealthChecker -File $env:USERPROFILE\Desktop\domain_list.txt | Export-Csv destination.csv -NoTypeInformation -Delimiter ";"
+PS C:\> Show-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt | Export-Csv destination.csv -NoTypeInformation -Delimiter ";"
 ```
 
 This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
@@ -98,6 +88,21 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
+### -DkimSelector
+Specify a custom DKIM-selector, the script will try to find and lookup the proper DKIM-record.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: 
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Server
 Specifies the IP addresses or host names of the DNS servers to be queried.
 By default the interface DNS servers are queried if this parameter is not supplied.
@@ -108,7 +113,7 @@ Parameter Sets: (All)
 Aliases: 
 
 Required: False
-Position: 3
+Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
