@@ -101,19 +101,19 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('Email', 'Emailsecurity', 'Security', 'SPF', 'DKIM', 'DMARC')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/logo/Show-SpfDkimDmarc.png'
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/CHANGELOG'
 
         # Prerelease string of this module
         # Prerelease = ''
