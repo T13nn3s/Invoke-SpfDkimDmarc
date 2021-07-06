@@ -204,5 +204,7 @@ function Show-SpfDkimDmarc {
         if ($Name) {
             StartDomainHealthCheck -Domain $Name
         } 
-    } end {}
+    } end {
+        Write-Host $PSBoundParameters
+    }
 }

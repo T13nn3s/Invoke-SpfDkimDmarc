@@ -175,7 +175,7 @@ function Show-SpfDkimDmarc {
         
             # Check DMARC-record
             $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty strings
-            if ($DMARC -eq $null) {
+            if ($DMARC -like "") {
                 $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
             }
             Else {
