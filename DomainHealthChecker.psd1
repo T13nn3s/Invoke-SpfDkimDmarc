@@ -24,7 +24,7 @@ GUID = '9f882a16-ebe1-4e3d-8573-7e014c129d1f'
 Author = 'Martien van Dijk'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+#CompanyName = ''
 
 # Copyright statement for this module
 Copyright = '(c) Martien van Dijk. All rights reserved.'
