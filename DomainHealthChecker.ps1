@@ -15,7 +15,7 @@
 
 .LICENSEURI https://github.com/T13nn3s/DomainHealthChecker/blob/main/LICENSE
 
-.PROJECTURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc'
+.PROJECTURI https://github.com/T13nn3s/Show-SpfDkimDmarc
 
 .ICONURI
 
@@ -25,7 +25,7 @@
 
 .EXTERNALSCRIPTDEPENDENCIES
 
-.RELEASENOTES
+.RELEASENOTES https://github.com/T13nn3s/Show-SpfDkimDmarc
 
 .PRIVATEDATA
 
@@ -118,6 +118,9 @@ function Show-SpfDkimDmarc {
 
             # Check SPF-record
             $SPF = Resolve-DnsName -type TXT -name $Domain -server $Server -ErrorAction SilentlyContinue | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings
+            if ($SPF -eq $null) {
+                $SpfAdvisory = "No SPF record found."
+            }
             if ($SPF -is [array]) {
                 $SpfAdvisory = "Domain has more than one SPF-record. One SPF record for one domain. This is explicitly defined in RFC4408"
             }
@@ -136,7 +139,7 @@ function Show-SpfDkimDmarc {
                         $SpfAdvisory = "Your domain has a valid SPF record but your policy is not effective enough."
                     }
                     Default {
-                        $SpfAdvisory = "No SPF-record found"
+                        $SpfAdvisory = "No qualifier found. Your domain has a SPF record but your policy is not effective enough."
                     }
                 }
             }
@@ -144,8 +147,8 @@ function Show-SpfDkimDmarc {
             # Check DKIM-record
             $DKIM = $null
             if ($DkimSelector) {
-                $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Domain)" -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Strings
-                if ($DKIM -like "") {
+                $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Domain)" -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                if ($DKIM -like " ") {
                     $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
                 }
                 elseif ($DKIM -match "v=DKIM1") {
@@ -172,7 +175,7 @@ function Show-SpfDkimDmarc {
         
             # Check DMARC-record
             $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty strings
-            if ($DMARC -like "") {
+            if ($DMARC -eq $null) {
                 $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
             }
             Else {
