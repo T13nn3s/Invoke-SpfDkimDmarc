@@ -15,7 +15,7 @@ RootModule = 'DomainHealthChecker.psm1'
 ModuleVersion = '1.4'
 
 # Supported PSEditions
-CompatiblePSEditions = @("Core", "Desktop")
+CompatiblePSEditions = @("Desktop")
 
 # ID used to uniquely identify this module
 GUID = '9f882a16-ebe1-4e3d-8573-7e014c129d1f'
@@ -33,7 +33,7 @@ Copyright = '(c) Martien van Dijk. All rights reserved.'
 Description = 'PowerShell module for checking one or multiple SPF, DKIM and DMARC records'
 
 # Minimum version of the PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.1'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -88,9 +88,9 @@ AliasesToExport = '*'
 
 # List of all files packaged with this module
 FileList = @(
+    "CHANGELOG",
     "DomainHealthChecker.psd1",
     "DomainHealthChecker.psm1",
-    "CHANGELOG",
     "LICENSE",
     "README.md"
 )
