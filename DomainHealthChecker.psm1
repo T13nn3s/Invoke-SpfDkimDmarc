@@ -117,7 +117,7 @@ function Show-SpfDkimDmarc {
         function StartDomainHealthCheck($domain) {
 
             # Check SPF-record
-            $SPF = Resolve-DnsName -type TXT -name $Domain -server $Server -ErrorAction SilentlyContinue | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings
+            $SPF = Resolve-DnsName -type TXT -name $Domain -server $Server -ErrorAction SilentlyContinue | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             if ($SPF -eq $null) {
                 $SpfAdvisory = "No SPF record found."
             }
@@ -174,7 +174,7 @@ function Show-SpfDkimDmarc {
             }
         
             # Check DMARC-record
-            $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty strings
+            $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             if ($DMARC -like "") {
                 $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
             }

@@ -12,7 +12,7 @@
 RootModule = 'DomainHealthChecker.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4'
+ModuleVersion = '1.4.1'
 
 # Supported PSEditions
 CompatiblePSEditions = @("Desktop")
@@ -30,7 +30,7 @@ Author = 'Martien van Dijk'
 Copyright = '(c) Martien van Dijk. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell module for checking one or multiple SPF, DKIM and DMARC records'
+Description = "PowerShell module for checking one or multiple SPF, DKIM and DMARC records."
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -101,7 +101,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Email', 'Emailsecurity', 'Security', 'SPF', 'DKIM', 'DMARC')
+        Tags = @("Email", "Emailsecurity", "Security", "SPF", "DKIM", "DMARC")
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/LICENSE'
@@ -119,7 +119,7 @@ PrivateData = @{
         # Prerelease = ''
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
-        # RequireLicenseAcceptance = $false
+        RequireLicenseAcceptance = $false
 
         # External dependent modules of this module
         # ExternalModuleDependencies = @()

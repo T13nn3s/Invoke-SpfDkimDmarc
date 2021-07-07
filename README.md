@@ -16,9 +16,14 @@ In short: this PowerShell Script can you use for checking SPF, DKIM and DMARC-re
 ## Module installation
 
 ```
-PS C:\> Import-Module .\DomainHealthChecker.psm1
+PS C:\> Install-Module -Name DomainHealthChecker
 ```
 
+## Update Module to latest version
+
+```
+PS C:\> Update-Module DomainHealthChecker -Requiredversion 1.4.1
+```
 
 ## SYNOPSIS
 The `DomainHealthChecker` cmdlet performs a DNS query on the SPF-record, DKIM-record and DMARC-record for the specified domain name. This cmdlet takes the output and is adding some advisory if there is room for improvements for the SPF or DMARC-record.

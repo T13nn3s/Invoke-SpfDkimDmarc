@@ -1,0 +1,26 @@
+# CHANGELOG
+
+[1.4.1] - 2021-07-07
+### Fixed
+- Error message on empty SPF-record
+
+[1.4] - 2021-07-06
+### Added
+- Support for PowerShell 5.1.
+- DkimSelector parameter for custom DKIM selectors.
+- Added manifest to the script.
+
+### Changed
+- Multiple if/elseif statements replaced with switches.
+- Turn Script into a Module with proper verb/noun Show-SpfDkimDmarc.
+
+### Fixed
+- Not working if/elseif statement in SPF.
+
+## [1.3.1] - 2021-07-03
+### Fixed
+- Bugfix console output
+
+## [1.3] - 2021-07-02
+### Added
+- Convert nslookup to Resolve-DnsName
