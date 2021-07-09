@@ -1,108 +1,103 @@
-<p align="center">
-  <a href="https://www.powershellgallery.com/packages/DomainHealthChecker/"><img src="https://img.shields.io/powershellgallery/v/DomainHealthChecker"></a>
-  <a href="https://www.powershellgallery.com/packages/DomainHealthChecker/"><img src="https://img.shields.io/badge/platform-windows-blue"></a>
-  <a href="https://www.powershellgallery.com/packages/DomainHealthChecker/"><img src="https://img.shields.io/github/languages/code-size/t13nn3s/domainhealthchecker"></a>
-  <a href="https://www.powershellgallery.com/packages/DomainHealthChecker/"><img src="https://img.shields.io/powershellgallery/dt/DomainHealthChecker?color=succes"></a>
-</p>
-<p align="center">
- <a href="https://www.powershellgallery.com/packages/DomainHealthChecker/"><img src="https://img.shields.io/github/languages/top/t13nn3s/Show-SpfDkimDmarc"></a>
-  </p>
+---
+external help file: DomainHealthChecker-help.xml
+Module Name: DomainHealthChecker
+online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/README.md
+schema: 2.0.0
+---
 
-<p align="center">
-  </p>
-  
-# DomainHealthChecker
-Is your email domain properly protected against abuse, such as email spoofing? This form of abuse can cause (image) damage to an organization. The PowerShell script DomainHealthChecker.ps1 checks the SPF, DKIM and DMARC record of one or more email domains and gives advice if necessary. 
-
-In short: this PowerShell Script can you use for checking SPF, DKIM and DMARC-record.
-
-## Module installation
-
-```
-PS C:\> Install-Module -Name DomainHealthChecker
-```
-
-## Update Module to latest version
-
-```
-PS C:\> Update-Module DomainHealthChecker -Requiredversion 1.4.1
-```
+# Show-SpfDkimDmarc
 
 ## SYNOPSIS
-The `DomainHealthChecker` cmdlet performs a DNS query on the SPF-record, DKIM-record and DMARC-record for the specified domain name. This cmdlet takes the output and is adding some advisory if there is room for improvements for the SPF or DMARC-record.
+Shows the SPF, DKIM, and DMARC-record for single or multiple domains.
 
 ## SYNTAX
 
+### domain
 ```
-Show-SpfDkimDmarc [-Name] <String> [-File] <string] [-Server <String[]>] [<CommonParameters>]
+Show-SpfDkimDmarc [-Name] <String> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
 ```
+
+### file
+```
+Show-SpfDkimDmarc [-File] <FileInfo> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
+```
+
+## DESCRIPTION
+Is your email domain properly protected against abuse, such as email spoofing? This form of abuse can cause (image) damage to an organization. The PowerShell script DomainHealthChecker.ps1 checks the SPF, DKIM and DMARC record of one or more email domains and gives advice if necessary.
+
 ## EXAMPLES
 
 ### EXAMPLE 1
-```
+```powershell
 PS C:\> Show-SpfDkimDmarc -Name binsec.nl
 ```
-This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record for the domain binsec.nl.
+```
+Name          : binsec.nl
+SPFRecord     : v=spf1 include:_spf.transip.email -all
+SpfAdvisory   : An SPF-record is configured and the policy is sufficiently strict.
+DmarcRecord   : v=DMARC1; p=reject; pct=100
+DmarcAdvisory : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimSelector  : selector1
+DkimRecord    :
+DkimAdvisory  : We couldn't find a DKIM record associated with your domain.
+```
 
 ### EXAMPLE 2
-```
+```powershell
 PS C:\> Show-SpfDkimDmarc -Name binsec.nl -Server 10.0.0.1
+```
+```
+Name          : binsec.nl
+SPFRecord     : v=spf1 include:_spf.transip.email -all
+SpfAdvisory   : An SPF-record is configured and the policy is sufficiently strict.
+DmarcRecord   : v=DMARC1; p=reject; pct=100
+DmarcAdvisory : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimSelector  : selector1
+DkimRecord    :
+DkimAdvisory  : We couldn't find a DKIM record associated with your domain.
 ```
 This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record for the domain binsec.nl against the DNS server at 10.0.0.1.
 
 ### EXAMPLE 3
-```
+```powershell
 PS C:\> Show-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt
+```
+```
+Name          : binsec.nl
+SPFRecord     : v=spf1 include:_spf.transip.email -all
+SpfAdvisory   : An SPF-record is configured and the policy is sufficiently strict.
+DmarcRecord   : v=DMARC1; p=reject; pct=100
+DmarcAdvisory : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimSelector  : selector1
+DkimRecord    :
+DkimAdvisory  : We couldn't find a DKIM record associated with your domain.
+
+Name          : itsecuritymatters.nl
+SPFRecord     : v=spf1 -all
+SpfAdvisory   : An SPF-record is configured and the policy is sufficiently strict.
+DmarcRecord   : v=DMARC1; p=reject; pct=100
+DmarcAdvisory : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimSelector  : selector1
+DkimRecord    :
+DkimAdvisory  : We couldn't find a DKIM record associated with your domain.
 ```
 
 This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
 
 ### EXAMPLE 4
-```
+```powershell
 PS C:\> Show-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt | Export-Csv destination.csv -NoTypeInformation -Delimiter ";"
 ```
 
-This example takes the list of domains from the file `domain_list.txt` and parse the domains through the SPF, DKIM and DMARC checker. 
-
 ## PARAMETERS
 
-
-### -Name
-Specifies the domain for resolving the SPF, DKIM and DMARC-record.
-
-```yaml
-Type: String
-Parameter Sets: domain
-Aliases: 
-
-Required: True
-Position: 0
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-### -File
-Retrieves a list of domain names from the specified file and checks the SPF, DKIM, and DMARC-records against these domains.
-
-```yaml
-Type: String
-Parameter Sets: file
-Aliases: 
-
-Required: True
-Position: 2
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
 ### -DkimSelector
-Specify a custom DKIM-selector, the script will try to find and lookup the proper DKIM-record.
+Specify a custom DKIM selector.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 3
@@ -111,14 +106,43 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -File
+Show SPF, DKIM and DMARC-records from multiple domains from a file.
+
+```yaml
+Type: FileInfo
+Parameter Sets: file
+Aliases:
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -Name
+Specifies the domain for resolving the SPF, DKIM and DMARC-record.
+
+```yaml
+Type: String
+Parameter Sets: domain
+Aliases:
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
 ### -Server
-Specifies the IP addresses or host names of the DNS servers to be queried.
-By default the interface DNS servers are queried if this parameter is not supplied.
+DNS Server to use.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 4
@@ -128,19 +152,20 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### None
+### System.String
+
+### System.IO.FileInfo
 
 ## OUTPUTS
 
-### None
-
+### System.Object
 ## NOTES
 
 ## RELATED LINKS
 
-[Script sharing post on Reddit](https://www.reddit.com/r/PowerShell/comments/occgr2/powershell_script_for_checking_spf_dkim_and_dmarc/)
-[Script on PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+- [Join the talk on Reddit](https://www.reddit.com/r/PowerShell/comments/occgr2/powershell_script_for_checking_spf_dkim_and_dmarc/)
+- [Script on PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
