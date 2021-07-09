@@ -1,61 +1,24 @@
-
-<#PSScriptInfo
-
-.VERSION 1.3.1
-
-.GUID 829d6e7f-2d4c-40de-9ead-36e508258b89
-
-.AUTHOR Martien van Dijk
-
-.COMPANYNAME Avantage IT
-
-.COPYRIGHT (c) 2021 Martien van Dijk @ All rights reserved.
-
-.TAGS @('Windows','Email','Security','Email Security','SPF','DKIM','DMARC')
-
-.LICENSEURI https://github.com/T13nn3s/DomainHealthChecker/blob/main/LICENSE
-
-.PROJECTURI https://github.com/T13nn3s/Show-SpfDkimDmarc
-
-.ICONURI
-
-.EXTERNALMODULEDEPENDENCIES 
-
-.REQUIREDSCRIPTS
-
-.EXTERNALSCRIPTDEPENDENCIES
-
-.RELEASENOTES https://github.com/T13nn3s/Show-SpfDkimDmarc
-
-.PRIVATEDATA
-
+<#>
+HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/README.md'
 #>
-
-<# 
-
-.DESCRIPTION 
- Is your email domain properly protected against abuse, such as email spoofing? This form of abuse can cause (image) damage to an organization. The PowerShell script DomainHealthChecker.ps1 checks the SPF, DKIM and DMARC record of one or more email domains and gives advice if necessary. 
-#> 
-
-Param()
 function Show-SpfDkimDmarc {
     [CmdletBinding()]
     param (
-        # Check a single domain
+        # Specifies the domain for resolving the SPF, DKIM and DMARC-record.
         [Parameter(
             Mandatory, ParameterSetName = 'domain',
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specify domain name whose SPF, DMARC and DKIM record should be checked.",
+            HelpMessage = "Specifies the domain for resolving the SPF, DKIM and DMARC-record.",
             Position = 1)]
         [string]$Name,
 
-        # Check domains from a file
+        # Show SPF, DKIM and DMARC-records from multiple domains from a file.
         [Parameter(
             Mandatory, ParameterSetName = 'file',
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specifies file name which contains a list of domain names.",
+            HelpMessage = "Show SPF, DKIM and DMARC-records from multiple domains from a file.",
             Position = 2)]
         [System.IO.FileInfo]$File,
 
@@ -67,6 +30,7 @@ function Show-SpfDkimDmarc {
 
         # DNS Server to use
         [Parameter(Mandatory = $false,
+            HelpMessage = "DNS Server to use.",
             Position = 4)]
         [string]$Server = "1.1.1.1"
     )
@@ -119,7 +83,7 @@ function Show-SpfDkimDmarc {
             # Check SPF-record
             $SPF = Resolve-DnsName -type TXT -name $Domain -server $Server -ErrorAction SilentlyContinue | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             if ($SPF -eq $null) {
-                $SpfAdvisory = "No SPF record found."
+                $SpfAdvisory = "Domain does not have an SPF record. To secure this domain, please add an SPF record to it."
             }
             if ($SPF -is [array]) {
                 $SpfAdvisory = "Domain has more than one SPF-record. One SPF record for one domain. This is explicitly defined in RFC4408"
