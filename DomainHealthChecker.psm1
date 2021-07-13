@@ -32,7 +32,7 @@ function Show-SpfDkimDmarc {
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.",
             Position = 4)]
-        [string]$Server = "1.1.1.1"
+        [string]$Server
     )
 
     begin {
@@ -68,6 +68,29 @@ function Show-SpfDkimDmarc {
                 $this.DkimAdvisory = $DkimAdvisory
             }
         }
+
+        if ($PSBoundParameters.ContainsKey('Server')) {
+            $SplatParameters = @{
+                'Server'      = $Server
+                'ErrorAction' = 'SilentlyContinue'
+            }
+        }
+        Else {
+            $SplatParameters = @{
+                'ErrorAction' = 'SilentlyContinue'
+            }
+        }
+
+        # Custom list of DKIM-selectors
+        # https://help.sendmarc.com/support/solutions/articles/44001891845-email-provider-commonly-used-dkim-selectors
+        $DkimSelectors = @(
+            'selector1' # Microsoft
+            'google', # Google
+            'everlytic', # Everlytic
+            'k1', # Mailchimp / Mandrill
+            'mxvault' # Global Micro
+            'dkim' # Hetzner
+        )
     }
 
     process {
@@ -77,13 +100,15 @@ function Show-SpfDkimDmarc {
                 return
             }
         }
-
+        
+       
         function StartDomainHealthCheck($domain) {
-
+          
             # Check SPF-record
-            $SPF = Resolve-DnsName -type TXT -name $Domain -server $Server -ErrorAction SilentlyContinue | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+            $SPF = $null
+            $SPF = Resolve-DnsName -Name $Domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             if ($SPF -eq $null) {
-                $SpfAdvisory = "Domain does not have an SPF record. To secure this domain, please add an SPF record to it."
+                $SpfAdvisory = "Domain does not have an SPF record. To prevent abuse of this domain, please add an SPF record to it."
             }
             if ($SPF -is [array]) {
                 $SpfAdvisory = "Domain has more than one SPF-record. One SPF record for one domain. This is explicitly defined in RFC4408"
@@ -107,66 +132,62 @@ function Show-SpfDkimDmarc {
                     }
                 }
             }
-
+            
             # Check DKIM-record
             $DKIM = $null
             if ($DkimSelector) {
-                $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Domain)" -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
-                if ($DKIM -like " ") {
+                $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Domain)" @SplatParameters | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                if ($DKIM -eq $null) {
                     $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
                 }
-                elseif ($DKIM -match "v=DKIM1") {
+                elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
                     $DkimAdvisory = "DKIM-record found."
-                    $DkimAdvisory
                 }
             }
-            Else {
-                $DkimSelector = "selector1" # Microsoft
-                $CnameSelector1 = Resolve-DnsName -Type CNAME -Name "$($DkimSelector)._domainkey.$Domain" -server $Server -ErrorAction SilentlyContinue
-                if ($CnameSelector1.Name -notmatch "domainkey") {
-                    $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
-                }
-                else {
-                    $DKIM = Resolve-DnsName -Type TXT -Name $CnameSelector1.namehost -server $Server | Select-Object -ExpandProperty strings
-                    if ($DKIM -like "") {
+            else {
+                foreach ($DkimSelector in $DkimSelectors) {
+                    $DKIM = Resolve-DnsName -Type TXT -Name  "$($DkimSelector)._domainkey.$($Domain)" @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                    if ($DKIM -eq $null) {
                         $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                     }
-                    elseif ($DKIM -match "v=DKIM1") {
-                        $DkimAdvisory = "DKIM-record is valid."
+                    elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                        $DkimAdvisory = "DKIM-record found."
+                        break
                     } 
                 }
             }
-        
-            # Check DMARC-record
-            $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain -Server $Server -ErrorAction SilentlyContinue | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
-            if ($DMARC -like "") {
-                $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
-            }
-            Else {
-                switch -Regex ($DMARC) {
-                    ('p=none') {
-                        $DmarcAdvisory = "Domain has a valid DMARC record but the DMARC (subdomain) policy does not prevent abuse of your domain by phishers and spammers."
-                    }
-                    ('p=quarantine') {
-                        $DmarcAdvisory = "Domain has a DMARC record and it is set to p=quarantine. To fully take advantage of DMARC, the policy should be set to p=reject."
-                    }
-                    ('p=reject') {
-                        $DmarcAdvisory = "Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers."
+            
+                # Check DMARC-record
+                $DMARC = $null
+                $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                if ($DMARC -eq $null) {
+                    $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
+                }
+                Else {
+                    switch -Regex ($DMARC) {
+                        ('p=none') {
+                            $DmarcAdvisory = "Domain has a valid DMARC record but the DMARC (subdomain) policy does not prevent abuse of your domain by phishers and spammers."
+                        }
+                        ('p=quarantine') {
+                            $DmarcAdvisory = "Domain has a DMARC record and it is set to p=quarantine. To fully take advantage of DMARC, the policy should be set to p=reject."
+                        }
+                        ('p=reject') {
+                            $DmarcAdvisory = "Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers."
+                        }
                     }
                 }
-            }
 
-            $ReturnValues = [SpfDkimDmarc]::New($Domain, $SPF, $SpfAdvisory, $DMARC, $DmarcAdvisory, $DkimSelector, $DKIM, $DkimAdvisory)
+                $ReturnValues = [SpfDkimDmarc]::New($Domain, $SPF, $SpfAdvisory, $DMARC, $DmarcAdvisory, $DkimSelector, $DKIM, $DkimAdvisory)
 
-            $ReturnValues  
-        }
-        if ($file) {
-            foreach ($Domain in (Get-Content -Path $file)) {
-                StartDomainHealthCheck -Domain $Domain
+                $ReturnValues  
             }
-        }
-        if ($Name) {
-            StartDomainHealthCheck -Domain $Name
-        } 
-    } end {}
-}
+            if ($file) {
+                foreach ($Domain in (Get-Content -Path $file)) {
+                    StartDomainHealthCheck -Domain $Domain
+                }
+            }
+            if ($Name) {
+                StartDomainHealthCheck -Domain $Name
+            } 
+        } end {}
+    }

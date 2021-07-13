@@ -1,5 +1,12 @@
 # CHANGELOG
 
+[1.4.2] - 2021-07-13
+### Added
+- More commonly used DKIM-selectors to the default DKIM check.
+
+### Changed
+- Removed hardcoded DNS. You need to specify it manually.
+
 [1.4.1] - 2021-07-07
 ### Fixed
 - Error message on empty SPF-record
