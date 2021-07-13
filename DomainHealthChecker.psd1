@@ -110,7 +110,7 @@ PrivateData = @{
         ProjectUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/logo/Show-SpfDkimDmarc.png'
+        IconUri = 'https://raw.githubusercontent.com/T13nn3s/Show-SpfDkimDmarc/main/logo/Show-SpfDkimDmarc.png'
 
         # ReleaseNotes of this module
         ReleaseNotes = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/CHANGELOG'

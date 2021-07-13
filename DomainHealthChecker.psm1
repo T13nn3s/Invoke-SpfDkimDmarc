@@ -89,6 +89,7 @@ function Show-SpfDkimDmarc {
             'k1', # Mailchimp / Mandrill
             'mxvault' # Global Micro
             'dkim' # Hetzner
+            'selector1' # Microsoft
         )
     }
 
@@ -104,6 +105,7 @@ function Show-SpfDkimDmarc {
         function StartDomainHealthCheck($domain) {
           
             # Check SPF-record
+            $SPF = $null
             $SPF = Resolve-DnsName -Name $Domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             if ($SPF -eq $null) {
                 $SpfAdvisory = "Domain does not have an SPF record. To prevent abuse of this domain, please add an SPF record to it."
@@ -135,17 +137,17 @@ function Show-SpfDkimDmarc {
             $DKIM = $null
             if ($DkimSelector) {
                 $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Domain)" @SplatParameters | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
-                if ($DKIM -like " ") {
+                if ($DKIM -eq $null) {
                     $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
                 }
-                elseif ($DKIM -match "v=DKIM1") {
+                elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
                     $DkimAdvisory = "DKIM-record found."
                 }
             }
             else {
                 # Microsoft default DKIM check
                 $DKIM = Resolve-DnsName -Type TXT -Name selector1._domainkey.$Domain @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
-                if ($DKIM -like " ") {
+                if ($DKIM -eq $null) {
                     $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                 }
                 elseif ($DKIM -match "v=DKIM1") {
@@ -153,23 +155,25 @@ function Show-SpfDkimDmarc {
                     $DkimAdvisory = "DKIM-record found."
                 } 
             }
-            if ($DKIM -like " ") {
+            if ($DKIM -eq $null) {
                 $DkimSelector = $null
                 # If DKIM is empty try different DKIM selectors
                 foreach ($DkimSelector in $DkimSelectors) {
-                    $DKIM = Resolve-DnsName -Type TXT -Name $DkimSelector._domainkey.$Domain @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                    $DKIM = Resolve-DnsName -Type TXT -Name  "$($DkimSelector)._domainkey.$($Domain)" @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
                     if ($DKIM -eq $null) {
                         $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                     }
-                    elseif ($DKIM -match "v=DKIM1") {
+                    elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
                         $DkimAdvisory = "DKIM-record found."
+                        break
                     } 
                 }
             }
         
             # Check DMARC-record
+            $DMARC = $null
             $DMARC = Resolve-DnsName -type TXT -name _dmarc.$Domain @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
-            if ($DMARC -like "") {
+            if ($DMARC -eq $null) {
                 $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
             }
             Else {
