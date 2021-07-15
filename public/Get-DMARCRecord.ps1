@@ -64,7 +64,7 @@ function Get-DMARCRecord {
     end {
         $DMARCReturnValues = New-Object psobject
         $DMARCReturnValues | Add-Member NoteProperty "Name" $Name
-        $DMARCReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC
+        $DMARCReturnValues | Add-Member NoteProperty "DmarcRecord" "$($DMARC)"
         $DMARCReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DmarcAdvisory
         $DMARCObject.Add($DMARCReturnValues)
         $DMARCReturnValues

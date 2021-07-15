@@ -16,12 +16,17 @@ function Get-DKIMRecord {
         )][Alias('Path')]
         [System.IO.FileInfo]$File,
 
+        [Parameter(Mandatory = $False,
+            HelpMessage = "Specify a custom DKIM selector.")]
+        [string]$DkimSelector,
+
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
         [string]$Server
     )
 
     begin {
+        
         if ($PSBoundParameters.ContainsKey('Server')) {
             $SplatParameters = @{
                 'Server'      = $Server
@@ -76,7 +81,7 @@ function Get-DKIMRecord {
         $DkimReturnValues | Add-Member NoteProperty "Name" $Name
         $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $DKIM
         $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelector
-        $DkimReturnValues | Add-Member NoteProperty "SPFAdvisory" $DkimAdvisory
+        $DkimReturnValues | Add-Member NoteProperty "DKIMAdvisory" $DkimAdvisory
         $DkimObject.Add($DkimReturnValues)
         $DkimReturnValues
     }
