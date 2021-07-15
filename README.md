@@ -1,11 +1,11 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/README.md
+online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/README.md
 schema: 2.0.0
 ---
 
-# Invoke-SpfDkimDmarc
+# Show-SpfDkimDmarc
 
 ## SYNOPSIS
 Shows the SPF, DKIM, and DMARC-record for single or multiple domains.
@@ -14,12 +14,12 @@ Shows the SPF, DKIM, and DMARC-record for single or multiple domains.
 
 ### domain
 ```
-Invoke-SpfDkimDmarc [-Name] <String> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
+Show-SpfDkimDmarc [-Name] <String> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
 ```
 
 ### file
 ```
-Invoke-SpfDkimDmarc [-File] <FileInfo> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
+Show-SpfDkimDmarc [-File] <FileInfo> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,7 +29,7 @@ Is your email domain properly protected against abuse, such as email spoofing? T
 
 ### EXAMPLE 1
 ```powershell
-PS C:\> Invoke-SpfDkimDmarc -Name binsec.nl
+PS C:\> Show-SpfDkimDmarc -Name binsec.nl
 ```
 ```
 Name          : binsec.nl
@@ -44,7 +44,7 @@ DkimAdvisory  : We couldn't find a DKIM record associated with your domain.
 
 ### EXAMPLE 2
 ```powershell
-PS C:\> Invoke-SpfDkimDmarc -Name binsec.nl -Server 10.0.0.1
+PS C:\> Show-SpfDkimDmarc -Name binsec.nl -Server 10.0.0.1
 ```
 ```
 Name          : binsec.nl
@@ -60,7 +60,7 @@ This example resolves the SPF-record, DKIM-record (selector1) and DMARC-record f
 
 ### EXAMPLE 3
 ```powershell
-PS C:\> Invoke-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt
+PS C:\> Show-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt
 ```
 ```
 Name          : binsec.nl
@@ -86,7 +86,7 @@ This example takes the list of domains from the file `domain_list.txt` and parse
 
 ### EXAMPLE 4
 ```powershell
-PS C:\> Invoke-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt | Export-Csv destination.csv -NoTypeInformation -Delimiter ";"
+PS C:\> Show-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domain_list.txt | Export-Csv destination.csv -NoTypeInformation -Delimiter ";"
 ```
 
 ## PARAMETERS
