@@ -1,6 +1,6 @@
 
 <#>
-HelpInfoURI
+HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md'
 #>
 function Get-DKIMRecord {
     [CmdletBinding()]

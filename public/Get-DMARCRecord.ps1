@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI
+HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md'
 #>
 function Get-DMARCRecord {
     [CmdletBinding()]
