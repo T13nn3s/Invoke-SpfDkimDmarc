@@ -1,11 +1,7 @@
-<#>
-HelpInfoURI 
-#>
-
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version:
+online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md
 schema: 2.0.0
 ---
 
