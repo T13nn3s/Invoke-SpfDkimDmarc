@@ -30,7 +30,7 @@ Author = 'Martien van Dijk'
 Copyright = '(c) Martien van Dijk. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = "PowerShell module for checking one or multiple SPF, DKIM and DMARC records."
+Description = "PowerShell module for checking SPF, DKIM and DMARC-record for one or multiple domains."
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -84,10 +84,12 @@ VariablesToExport = '*'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = @(
-    'Resolve-SPFRecord',
-    'Resolve-DKIMRecord',
-    'Resolve-DMARCRecord'
-    )
+    'Show-SpfDkimDmarc',
+    'isdd'
+    'gspf'
+    'gdkim'
+    'gdmarc'
+)
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

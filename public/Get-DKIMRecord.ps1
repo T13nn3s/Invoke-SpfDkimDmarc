@@ -1,3 +1,7 @@
+
+<#>
+HelpInfoURI
+#>
 function Get-DKIMRecord {
     [CmdletBinding()]
     param(
@@ -5,16 +9,8 @@ function Get-DKIMRecord {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specifies the domain for resolving the SPF-record."
-        )][Alias('Resolve-DKIMRecord')]
-        [string]$Name,
-
-        [Parameter(
-            ValueFromPipeline = $True,
-            ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Show DKIM-record from multiple domains from a file."
-        )][Alias('Path')]
-        [System.IO.FileInfo]$File,
+            HelpMessage = "Specifies the domain for resolving the DKIM-record."
+        )][string]$Name,
 
         [Parameter(Mandatory = $False,
             HelpMessage = "Specify a custom DKIM selector.")]
@@ -43,8 +39,11 @@ function Get-DKIMRecord {
         # https://help.sendmarc.com/support/solutions/articles/44001891845-email-provider-commonly-used-dkim-selectors
         $DkimSelectors = @(
             'selector1' # Microsoft
+            'selector2' # Microsoft
             'google', # Google
-            'everlytic', # Everlytic
+            'everlytickey1', # Everlytic
+            'everlytickey2', # Everlytic
+            'eversrv', # Everlytic OLD selector
             'k1', # Mailchimp / Mandrill
             'mxvault' # Global Micro
             'dkim' # Hetzner
@@ -85,4 +84,5 @@ function Get-DKIMRecord {
         $DkimObject.Add($DkimReturnValues)
         $DkimReturnValues
     }
-}      
+}
+Set-Alias gdkim -Value Get-DKIMRecord     

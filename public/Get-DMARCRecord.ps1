@@ -1,3 +1,6 @@
+<#>
+HelpInfoURI
+#>
 function Get-DMARCRecord {
     [CmdletBinding()]
     param(
@@ -6,15 +9,7 @@ function Get-DMARCRecord {
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
             HelpMessage = "Specifies the domain for resolving the DMARC-record."
-        )][Alias('Resolve-DMARCRecord')]
-        [string]$Name,
-
-        [Parameter(
-            ValueFromPipeline = $True,
-            ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Show DMARC-record from multiple domains from a file."
-        )][Alias('Path')]
-        [System.IO.FileInfo]$File,
+        )][string]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
@@ -70,3 +65,4 @@ function Get-DMARCRecord {
         $DMARCReturnValues
     }
 }
+Set-Alias -Name gdmarc -Value Get-DMARCRecord

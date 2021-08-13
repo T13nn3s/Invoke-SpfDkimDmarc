@@ -25,6 +25,7 @@ function Invoke-SpfDkimDmarc {
             ValueFromPipelineByPropertyName = $True,
             HelpMessage = "Show SPF, DKIM and DMARC-records from multiple domains from a file.",
             Position = 2)]
+        [Alias('Path')]
         [System.IO.FileInfo]$File,
 
         [Parameter(Mandatory = $False,
@@ -39,27 +40,43 @@ function Invoke-SpfDkimDmarc {
     )
 
     begin {
-
-        $InvokeObject = New-Object System.Collections.Generic.List[System.Object]
-        
+        $InvokeObject = New-Object System.Collections.Generic.List[System.Object]        
     } process {
+        function StartDomainHealthCheck($Name, $DkimSelector) {
+            if ($DkimSelector) {
+                $Splat = @{
+                    'DkimSelector' = $DkimSelector
+                }
+            }
 
-        $SPF = Get-SPFRecord -Name $Name
-        $DKIM = Get-DKIMRecord -Name $Name
-        $DMARC = Get-DMARCRecord -Name $Name
+            $SPF = Get-SPFRecord -Name $Name
+            $DKIM = Get-DKIMRecord -Name $Name @Splat
+            $DMARC = Get-DMARCRecord -Name $Name
 
+            $InvokeReturnValues = New-Object psobject
+            $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
+            $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
+            $InvokeReturnValues | Add-Member NoteProperty "SpfAdvisory" $SPF.SpfAdvisory
+            $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
+            $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
+            $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
+            $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+            $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+            $InvokeObject.Add($InvokeReturnValues)
+            $InvokeReturnValues
+        }
     }
     end {
-        $InvokeReturnValues = New-Object psobject
-        $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
-        $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
-        $InvokeReturnValues | Add-Member NoteProperty "SpfAdvisory" $SPF.SpfAdvisory
-        $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
-        $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
-        $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
-        $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
-        $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-        $InvokeObject.Add($InvokeReturnValues)
-        $InvokeReturnValues
+        if ($file) {
+            foreach ($Name in (Get-Content -Path $File)) {
+                StartDomainHealthCheck -Name $Name
+            }
+        }
+        if ($Name) {
+            StartDomainHealthCheck -Name $Name
+        }
     }
-} 
+}
+
+Set-Alias Show-SpfDkimDmarc -Value Invoke-SpfDkimDmarc
+Set-Alias isdd -Value Invoke-SpfDkimDmarc

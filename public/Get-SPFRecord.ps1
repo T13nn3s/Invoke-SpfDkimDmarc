@@ -1,3 +1,6 @@
+<#>
+HelpInfoURI
+#>
 function Get-SPFRecord {
     [CmdletBinding()]
     param(
@@ -6,15 +9,7 @@ function Get-SPFRecord {
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
             HelpMessage = "Specifies the domain for resolving the SPF-record."
-        )][Alias('Resolve-SPFRecord')]
-        [string]$Name,
-
-        [Parameter(
-            ValueFromPipeline = $True,
-            ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Show SPF-record from multiple domains from a file."
-        )][Alias('Path')]
-        [System.IO.FileInfo]$File,
+        )][string]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
@@ -82,3 +77,4 @@ function Get-SPFRecord {
         $SpfReturnValues
     }
 }
+Set-Alias gspf -Value Get-SPFRecord
