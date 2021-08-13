@@ -12,7 +12,7 @@
 RootModule = 'DomainHealthChecker.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4.1'
+ModuleVersion = '1.5'
 
 # Supported PSEditions
 CompatiblePSEditions = @("Desktop")
@@ -30,7 +30,7 @@ Author = 'Martien van Dijk'
 Copyright = '(c) Martien van Dijk. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = "PowerShell module for checking one or multiple SPF, DKIM and DMARC records."
+Description = "PowerShell module for checking SPF, DKIM and DMARC-record for one or multiple domains."
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -69,7 +69,12 @@ PowerShellVersion = '5.1'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Show-SpfDkimDmarc'
+FunctionsToExport = @(
+    'Invoke-SpfDkimDmarc',
+    'Get-SPFRecord',
+    'Get-DKIMRecord',
+    'Get-DMARCRecord'
+    )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
@@ -78,7 +83,13 @@ CmdletsToExport = '*'
 VariablesToExport = '*'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = '*'
+AliasesToExport = @(
+    'Show-SpfDkimDmarc',
+    'isdd'
+    'gspf'
+    'gdkim'
+    'gdmarc'
+)
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
