@@ -10,6 +10,10 @@
 # Invoke-SpfDkimDmarc
 Invoke-SpfDkimDmarc is a function within the PowerShell module named `DomainHealthChecker` that can check the SPF, DKIM and DMARC record for one or multiple domains. On installing this module you can use `Invoke-SpfDKimDmarc` to check the records. You can also check the records individually by using the cmdlets `Get-SPFrecord`, `Get-DKIMRecord` or by running the `Get-DMARCRecord` to check the record of a single domain.
 
+
+![Invoke-SpfDkimDmarc](https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/logo/Show-SpfDkimDmarc.png)
+
+
 ## System Requirements
 This module requires PowerShell version 5.1 or higher. 
 
