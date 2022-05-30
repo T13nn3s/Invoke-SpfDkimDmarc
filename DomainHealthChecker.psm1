@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/README.md'
+HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
 #>
 
 # Load functions

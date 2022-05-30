@@ -1,7 +1,7 @@
-
 <#>
-HelpInfoURI
+HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md'
 #>
+
 function Get-DKIMRecord {
     [CmdletBinding()]
     param(
@@ -55,24 +55,58 @@ function Get-DKIMRecord {
     Process { 
     
         if ($DkimSelector) {
-            $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Name)" @SplatParameters | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
-            if ($DKIM -eq $null) {
-                $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
-            }
-            elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
-                $DkimAdvisory = "DKIM-record found."
+            $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($Name)" @SplatParameters
+            if ($DKIM.Type -eq "CNAME") {
+                while ($DKIM.Type -eq "CNAME") {
+                    $DKIMCname = $DKIM.NameHost
+                    $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters 
+                    }
+                    $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    if ($DKIM -eq $null) {
+                        $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
+                    }
+                    elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                        $DkimAdvisory = "DKIM-record found."
+                    }
+                } 
+            else {
+                $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                if ($DKIM -eq $null) {
+                    $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
+                }
+                elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                    $DkimAdvisory = "DKIM-record found."
+                }
             }
         }
         else {
             foreach ($DkimSelector in $DkimSelectors) {
-                $DKIM = Resolve-DnsName -Type TXT -Name  "$($DkimSelector)._domainkey.$($Name)" @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
-                if ($DKIM -eq $null) {
-                    $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
+                $DKIM = Resolve-DnsName -Type TXT -Name  "$($DkimSelector)._domainkey.$($Name)" @SplatParameters
+                if ($DKIM.Type -eq "CNAME") {
+                    while ($DKIM.Type -eq "CNAME") {
+                        $DKIMCname = $DKIM.NameHost
+                        $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters 
+                        }
+                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        if ($DKIM -eq $null) {
+                            $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey."
+                        }
+                        elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                            $DkimAdvisory = "DKIM-record found."
+                            break
+                        }
                 }
-                elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
-                    $DkimAdvisory = "DKIM-record found."
-                    break
-                } 
+                else {
+                    $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    if ($DKIM -eq $null) {
+                        $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
+                    }
+                    elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                        $DkimAdvisory = "DKIM-record found."
+                        break
+                    }
+                }
+                 
             }
         }
     } end {
