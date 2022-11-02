@@ -6,6 +6,13 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+[1.5.1] - 30-5-2022
+### Fixed
+- Fix for DKIM CNAME by @mdallaire in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/pull/20
+
+### New Contributors
+ - [@mdallaire](https://github.com/mdallaire) made their first contribution in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/pull/20
+
 [1.5] - 13-8-2021
 ### Added
 - SPF is following redirects.
