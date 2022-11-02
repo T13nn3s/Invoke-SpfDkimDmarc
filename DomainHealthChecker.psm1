@@ -67,12 +67,12 @@ function Invoke-SpfDkimDmarc {
         }
     }
     end {
-        if ($file) {
+        if ($PSBoundParameters.ContainsKey('File')) {
             foreach ($Name in (Get-Content -Path $File)) {
                 StartDomainHealthCheck -Name $Name
             }
         }
-        if ($Name) {
+        if ($PSBoundParameters.ContainsKey('Name')) {
             StartDomainHealthCheck -Name $Name
         }
     }
