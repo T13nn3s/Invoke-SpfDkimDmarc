@@ -57,7 +57,7 @@ function Get-DMARCRecord {
                     $DmarcAdvisory += "The subdomain policy does not prevent abuse of your domain by phishers and spammers."
                 }
                 ('sp=quarantine') {
-                    $DmarcAdvisory += "The subdomain has a DMARC record and it is set to p=quarantine. To prevent you subdomains configure the policy to sp=reject."
+                    $DmarcAdvisory += "The subdomain has a DMARC record and it is set to sp=quarantine. To prevent you subdomains configure the policy to sp=reject."
                 }
                 ('sp=reject') {
                     $DmarcAdvisory += "The subdomain policy prevent abuse of your domain by phishers and spammers."
