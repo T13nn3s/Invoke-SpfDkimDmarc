@@ -51,7 +51,16 @@ function Get-DMARCRecord {
                     $DmarcAdvisory = "Domain has a DMARC record and it is set to p=quarantine. To fully take advantage of DMARC, the policy should be set to p=reject."
                 }
                 ('p=reject') {
-                    $DmarcAdvisory = "Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers."
+                    $DmarcAdvisory = "Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers. "
+                }
+                ('sp=none') {
+                    $DmarcAdvisory += "The subdomain policy does not prevent abuse of your domain by phishers and spammers."
+                }
+                ('sp=quarantine') {
+                    $DmarcAdvisory += "The subdomain has a DMARC record and it is set to sp=quarantine. To prevent you subdomains configure the policy to sp=reject."
+                }
+                ('sp=reject') {
+                    $DmarcAdvisory += "The subdomain policy prevent abuse of your domain by phishers and spammers."
                 }
             }
         }
