@@ -48,10 +48,16 @@ function Invoke-SpfDkimDmarc {
                     'DkimSelector' = $DkimSelector
                 }
             }
+            
+            if ($Server) {
+                $Splat += @{
+                    'Server' = $Server
+                }
+            }
 
-            $SPF = Get-SPFRecord -Name $Name
+            $SPF = Get-SPFRecord -Name $Name @Splat
             $DKIM = Get-DKIMRecord -Name $Name @Splat
-            $DMARC = Get-DMARCRecord -Name $Name
+            $DMARC = Get-DMARCRecord -Name $Name @Splat
 
             $InvokeReturnValues = New-Object psobject
             $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
