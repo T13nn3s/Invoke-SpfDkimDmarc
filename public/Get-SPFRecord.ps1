@@ -13,7 +13,10 @@ function Get-SPFRecord {
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
-        [string]$Server
+        [string]$Server,
+
+        [Parameter(Mandatory = $false)]
+        [string]$DkimSelector = $null
     )
 
     begin {
