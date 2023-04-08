@@ -42,16 +42,17 @@ function Invoke-SpfDkimDmarc {
     begin {
         $InvokeObject = New-Object System.Collections.Generic.List[System.Object]        
     } process {
-        function StartDomainHealthCheck($Name, $DkimSelector) {
-            if ($DkimSelector) {
+        function StartDomainHealthCheck($Name) {
+            if ($DkimSelector -or $Server) {
                 $Splat = @{
                     'DkimSelector' = $DkimSelector
+                    'Server' = $Server
                 }
             }
 
-            $SPF = Get-SPFRecord -Name $Name
+            $SPF = Get-SPFRecord -Name $Name @Splat
             $DKIM = Get-DKIMRecord -Name $Name @Splat
-            $DMARC = Get-DMARCRecord -Name $Name
+            $DMARC = Get-DMARCRecord -Name $Name @Splat
 
             $InvokeReturnValues = New-Object psobject
             $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
