@@ -34,9 +34,10 @@ C:\> Import-Module -Name .\DomainHealthChecker.psm1
 After installing this module, you have the following cmdlets at your disposal.
 
 - `Invoke-SpfDkimDmarc` to check the SPF, DKIM, and DMARC records for one or multiple domains. You can export the results to a file. For example, to a comma-separated file with the `Export-CSV` command.
-- `Get-SPFRecord` to check the SPF record for a single domain. This cmdlet has also an alias `gspf` for quick checks.
+- `Get-SPFRecord` to check the SPF record for a single domain. The module also checks the charachter lenght of the SPF-record. This cmdlet has also an alias `gspf` for quick checks.
 - `Get-DKIMRecord` to check the DKIM record for a single domain. This cmdlet has also an alias `gdkim` for quick checks.
 - `Get-DMARCRecord` to check the DMARC record for a single domain. This cmdlet has also an alias `gdmarc` for quick checks.
+- `Get-DNSSec` to check whether the domain is protected with DNSSEC. This cmdlet has also an alias `gdnssec` for quick checks.
 
 ## Split DNS environment
-If you are using a split DNS environment, you can still use this module using the `-Server` parameter to specify an alternative DNS server.
+If you are using a split DNS environment, you can use the `-Server` parameter to specify an alternative DNS server.
