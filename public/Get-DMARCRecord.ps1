@@ -13,10 +13,16 @@ function Get-DMARCRecord {
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
-        [string]$Server
+        [string]$Server,
+
+        [Parameter(Mandatory = $false)]
+        [string]$DkimSelector = $null
     )
 
     begin {
+
+        Write-Verbose "Starting $($MyInvocation.MyCommand)"
+        $PSBoundParameters | Out-String | Write-Verbose
 
         if ($PSBoundParameters.ContainsKey('Server')) {
             $SplatParameters = @{
