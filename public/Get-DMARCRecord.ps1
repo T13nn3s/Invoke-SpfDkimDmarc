@@ -21,6 +21,9 @@ function Get-DMARCRecord {
 
     begin {
 
+        Write-Verbose "Starting $($MyInvocation.MyCommand)"
+        $PSBoundParameters | Out-String | Write-Verbose
+
         if ($PSBoundParameters.ContainsKey('Server')) {
             $SplatParameters = @{
                 'Type'        = 'TXT'

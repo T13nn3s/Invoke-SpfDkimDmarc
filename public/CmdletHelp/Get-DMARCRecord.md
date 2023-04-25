@@ -13,34 +13,38 @@ Function to resolve a DMARC record of a domain.
 ## SYNTAX
 
 ```
-Get-DMARCRecord [-Name] <String> [[-Server] <String>] [<CommonParameters>]
+Get-DMARCRecord [-Name] <String> [[-Server] <String>] [-DkimSelector <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-It is important to configure DMARC on your emaildomain. DMARC stands for Domain-based Message Authentication, Reporting and Conformance. It is a policy-based protocol for enforcing a specific policy to email traffic sent on behalf of an email domain. DMARC works closely with the SPF and DKIM records, to prevent email spoofing. This PowerShell function can resolve an DMARC record of a domain and give an advisory regarding the current configuration.
+It is important to configure DMARC on your emaildomain.
+DMARC stands for Domain-based Message Authentication, Reporting and Conformance.
+It is a policy-based protocol for enforcing a specific policy to email traffic sent on behalf of an email domain.
+DMARC works closely with the SPF and DKIM records, to prevent email spoofing.
+This PowerShell function can resolve an DMARC record of a domain and give an advisory regarding the current configuration.
 
 ## EXAMPLES
 
 ### Example 1
-```powershell
-PS C:\> Get-DMARCRecord -Name binsec.nl
 ```
-```powershell
+PS C:\> Get-DMARCRecord -Name binsec.nl
+
 Name      DmarcRecord                 DmarcAdvisory
 ----      -----------                 -------------
 binsec.nl v=DMARC1; p=reject; pct=100 Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
 ```
+
 This example resolves the DMARC record for the domain binsec.nl.
 
 ### Example 2
-```powershell
-PS C:\> Get-DMARCRecord -Name binsec.nl -Server 10.0.0.1
 ```
-```powershell
+PS C:\> Get-DMARCRecord -Name binsec.nl -Server 10.0.0.1
+
 Name      DmarcRecord                 DmarcAdvisory
 ----      -----------                 -------------
 binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DMARC (subdomain) policy does not prevent abuse of your domain by phishers and spammers.
 ```
+
 This example resolves the DMARC record for the domain binsec.nl agains the DNS server 10.0.0.1.
 
 ## PARAMETERS
@@ -75,13 +79,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -DkimSelector
+{{ Fill DkimSelector Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
 ### System.String
-
 ## OUTPUTS
 
 ### System.Object
@@ -90,3 +108,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## RELATED LINKS
 
 [Get-DMARCRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+

@@ -17,30 +17,32 @@ Get-SPFRecord [-Name] <String> [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-It is important to configure an SPF record on your emaildomain. SPF stands for Sender Policy Framework, and it's an authentication protocol to prevent email spoofing. This PowerShell function can resolve an SPF record of a emaildomain and give an advisory regarding the current configuration.
+It is important to configure an SPF record on your emaildomain.
+SPF stands for Sender Policy Framework, and it's an authentication protocol to prevent email spoofing.
+This PowerShell function can resolve an SPF record of a emaildomain and give an advisory regarding the current configuration.
 
 ## EXAMPLES
 
 ### Example 1
-```powershell
-PS C:\> Get-SPFRecord -Name binsec.nl
 ```
-```powershell
+PS C:\> Get-SPFRecord -Name binsec.nl
+
 Name      SPFRecord                              SPFAdvisory
 ----      ---------                              -----------
 binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and the policy is sufficiently strict.
 ```
+
 This example resolves the SPF record for the domain binsec.nl.
 
 ### Example 2
-```powershell
-PS C:\> Get-SPFRecord -Name binsec.nl -Server 10.0.0.1
 ```
-```powershell
+PS C:\> Get-SPFRecord -Name binsec.nl -Server 10.0.0.1
+
 Name      SPFRecord                              SPFAdvisory
 ----      ---------                              -----------
 binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and the policy is sufficiently strict.
 ```
+
 This example resolves the SPF-record for the domain binsec.nl against the DNS server at 10.0.0.1.
 
 ## PARAMETERS
@@ -81,7 +83,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.String
-
 ## OUTPUTS
 
 ### System.Object
@@ -90,3 +91,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## RELATED LINKS
 
 [Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+
