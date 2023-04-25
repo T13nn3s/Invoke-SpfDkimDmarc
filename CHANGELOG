@@ -6,6 +6,24 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+[1.6] - 25-4-2023
+### Added
+- Added `-IncludeDNSSEC` if DNSKEY records can be found. As per requested in #27.
+- Added SPF-record length check if it's not more than 255 characters in #33.  
+
+### Fixed
+- Fixes for custom DkimSelector and Server in #30
+- Get-SPFRecord.ps1 bug - SPF record that over 255 characters bug in #31
+- Invoke-SpfDkimDmarc not using -server property bug in #32 
+
+## New Contributors
+- @mortenmw made their first contribution in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/pull/30
+
+[1.5.2] - 30-2-2022
+### Fixed
+- Fix for File <filename> as source returns the last entry twice. #24
+- Fix for Get-DMARCRecord potentially gives back incorrect result enhancement #19 
+
 [1.5.1] - 30-5-2022
 ### Fixed
 - Fix for DKIM CNAME by @mdallaire in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/pull/20
