@@ -79,7 +79,7 @@ function Get-SPFRecord {
         $SpfReturnValues = New-Object psobject
         $SpfReturnValues | Add-Member NoteProperty "Name" $Name
         $SpfReturnValues | Add-Member NoteProperty "SPFRecord" "$($SPF)"
-        $SpfReturnValues | Add-Member NoteProperty "SPFRecordLenght" "$($SpfTotalLenght)"
+        $SpfReturnValues | Add-Member NoteProperty "SPFRecordLength" "$($SpfTotalLenght)"
         $SpfReturnValues | Add-Member NoteProperty "SPFAdvisory" $SpfAdvisory
         $SpfObject.Add($SpfReturnValues)
         $SpfReturnValues
