@@ -1,5 +1,7 @@
 // TODO: Things needs to be added in the new version
 
+=> The calculation of the SPF lenght has still some issues.
+
 Added:
 - [x] New function `Get-MTASTS`.
 - [x] Added support for multiple values for the `-Name` parameter.

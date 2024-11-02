@@ -100,7 +100,7 @@ function Invoke-MtaSts {
 
         foreach ($domain in $Name) {
 
-            $mtsStsDns = (Resolve-DnsName -Name "_mta-sts.$($domain)" -Type TXT -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_mta-sts.$($domain)" -and $_.Strings -match "v=STSv1" } | Select-Object -ExpandProperty Strings) -join "`n"
+            $mtsStsDns = (Resolve-DnsName -Name "_mta-sts.$($domain)" -Type TXT -QuickTimeout -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_mta-sts.$($domain)" -and $_.Strings -match "v=STSv1" } | Select-Object -ExpandProperty Strings) -join "`n"
             Write-Verbose "mtsStsDns: $($mtsStsDns)"
 
             try { 
