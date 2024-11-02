@@ -124,7 +124,7 @@ function Invoke-SpfDkimDmarc {
         if ($PSBoundParameters.ContainsKey('Name')) {
             foreach ($domain in $Name) {
                 $SPF = Get-SPFRecord -Name $domain @Splat
-                $DKIM = Get-DKIMRecord -Name $domain @Splat
+                $DKIM = Get-DKIMRecord -Name $domain @Splat @DKIMSplat
                 $DMARC = Get-DMARCRecord -Name $domain @Splat
                 $MTASTS = Invoke-MtaSTS -Name $domain @Splat
             

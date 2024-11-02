@@ -9,7 +9,7 @@ Fixes:
 - [x] Misspelled Property in Three Functions
 - [] SPF check not correct
 - [] SPF Length
-- [] DkimSelector not working for Invoke-SpfDkimDmarc 
+- [x] DkimSelector not working for Invoke-SpfDkimDmarc 
 
 Changed:
 - [] Updated the helpfiles.
