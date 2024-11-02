@@ -1,8 +1,15 @@
 // TODO: Things needs to be added in the new version
 
 Added:
-- New function Get-MTASTS
-- Create helpfile for this function
+- [x] New function `Get-MTASTS`.
+- [x] Added support for multiple values for the `-Name` parameter.
 
 Fixes:
-- See Githuib issues for some problems
+- [x] Typo in SPF Length
+- [x] Misspelled Property in Three Functions
+- [] SPF check not correct
+- [] SPF Length
+- [] DkimSelector not working for Invoke-SpfDkimDmarc 
+
+Changed:
+- [] Updated the helpfiles.

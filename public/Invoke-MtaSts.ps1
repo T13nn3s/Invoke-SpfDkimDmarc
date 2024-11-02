@@ -9,7 +9,7 @@ function Invoke-MtaSts {
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
             HelpMessage = "Specifies the domain for resolving the MTA-STS record."
-        )][string]$Name,
+        )][string[]]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
@@ -98,57 +98,78 @@ function Invoke-MtaSts {
 
         $cti = (Get-Culture).TextInfo
 
-        $mtsStsDns = (Resolve-DnsName -Name "_mta-sts.$($Name)" -Type TXT -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_mta-sts.$($Name)" -and $_.Strings -match "v=STSv1" } | Select-Object -ExpandProperty Strings) -join "`n"
-        Write-Verbose "mtsStsDns: $($mtsStsDns)"
+        foreach ($domain in $Name) {
 
-        try { 
-            $mtsStsFile = Invoke-WebRequest "https://mta-sts.$($Name)/.well-known/mta-sts.txt" -UseBasicParsing -DisableKeepAlive | Select-Object -ExpandProperty Content 
-        }
-        catch { 
-            $mtsStsFile = $null 
-        }
-        Write-Verbose "mtsStsFile: $($mtsStsFile)"
+            $mtsStsDns = (Resolve-DnsName -Name "_mta-sts.$($domain)" -Type TXT -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_mta-sts.$($domain)" -and $_.Strings -match "v=STSv1" } | Select-Object -ExpandProperty Strings) -join "`n"
+            Write-Verbose "mtsStsDns: $($mtsStsDns)"
 
-        $mtaRecord = $mtsStsDns
-
-        switch -Regex ($mtsStsDns) {
-            { !$_ } {
-                $mtaAdvisory = "The MTA-STS DNS record doesn't exist. "; continue
+            try { 
+                $mtsStsFile = Invoke-WebRequest "https://mta-sts.$($domain)/.well-known/mta-sts.txt" -UseBasicParsing -DisableKeepAlive | Select-Object -ExpandProperty Content 
             }
-            { $_.Split("`n").Count -ne 1 } { $mtaAdvisory = "There are multiple MTA-STS DNS records. " }
-            { $_ -notmatch 'STSv1' }
-            { $mtaAdvisory = "The MTA-STS version is not configured properly. Only STSv1 is supported. " }
-            { $_ -notmatch 'id=([^;\s]{1,32})(?:;|$)' } { $mtaAdvisory = "The MTA-STS id must be alphanumeric and no longer than 32 characters. " }
-            default {
+            catch { 
+                $mtsStsFile = $null 
+            }
+            Write-Verbose "mtsStsFile: $($mtsStsFile)"
 
-                switch -Regex ($mtsStsFile) {
-                    { !$_ } { $mtaAdvisory = "The MTA-STS file doesn't exist. "; continue }
-                    { $_ -notmatch 'version:\s*(STSv1)' } { $mtaAdvisory = "The MTA-STS version is not configured in the file. The only options is STSv1. " }
-                    { $_ -notmatch 'mode:\s*(enforce|none|testing)' } { $mtaAdvisory = "The MTA-STS mode is not configured in the file. Options are Enforce, Testing and None. " }
-                    { $_ -match 'mode:\sF*(enforce|none|testing)' -and $_ -notmatch 'mode:\s*Enforce' } { $mtaAdvisory = "The MTA-STS file is configured in $($null = $_ -match 'mode:\s*(enforce|none|testing)'; $cti.ToTitleCase($Matches[1].ToLower()) ) mode and not protecting interception or tampering. " }
-                    { !($_.Split("`n") -match '(?<=mx: ).*$') } { $mtaAdvisory = "The MTA-STS file doesn't have any MX record configured. " }
-                    { $_.Split("`n") -match '(?<=mx: ).*$' -and ( !(Get-MxMta -domainName $Name -mtsStsFileContents $mtsStsFile) ) } { $mtaAdvisory = "The MTA-STS file MX records don't match with the MX records configured in the domain. " }
+            $mtaRecord = $mtsStsDns
 
+            switch -Regex ($mtsStsDns) {
+                { !$_ } {
+                    $mtaAdvisory = "The MTA-STS DNS record doesn't exist. "; continue
+                }
+                { $_.Split("`n").Count -ne 1 } {
+                    $mtaAdvisory = "There are multiple MTA-STS DNS records. "
+                }
+                { $_ -notmatch 'STSv1' } {
+                    $mtaAdvisory = "The MTA-STS version is not configured properly. Only STSv1 is supported. " 
+                }
+                { $_ -notmatch 'id=([^;\s]{1,32})(?:;|$)' } {
+                    $mtaAdvisory = "The MTA-STS id must be alphanumeric and no longer than 32 characters. " 
+                }
+                default {
 
-                    { $_.Split("`n") -match '(?<=mx: ).*$' -and ( Resolve-DnsName -Name $Name -Type MX | Select-Object -ExpandProperty NameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } { $mtaAdvisory = "At least one of the MX records configured in the MTA-STS file MX records list doesn't support TLS. " }
-                    { $_ -notmatch 'max_age:\s*(604800|31557600)' } { $mtaAdvisory = "The MTA-STS max age configured in the file should be greater than 604800 seconds and less than 31557600 seconds. " }
-                    default {
-                        $mtaAdvisory = "The domain has the MTA-STS DNS record and file configured and protected against interception or tampering."
+                    switch -Regex ($mtsStsFile) {
+                        { !$_ } {
+                            $mtaAdvisory = "The MTA-STS file doesn't exist. "; continue 
+                        }
+                        { $_ -notmatch 'version:\s*(STSv1)' } { 
+                            $mtaAdvisory = "The MTA-STS version is not configured in the file. The only options is STSv1. " 
+                        }
+                        { $_ -notmatch 'mode:\s*(enforce|none|testing)' } { 
+                            $mtaAdvisory = "The MTA-STS mode is not configured in the file. Options are Enforce, Testing and None. " 
+                        }
+                        { $_ -match 'mode:\sF*(enforce|none|testing)' -and $_ -notmatch 'mode:\s*Enforce' } {
+                            $mtaAdvisory = "The MTA-STS file is configured in $($null = $_ -match 'mode:\s*(enforce|none|testing)'; $cti.ToTitleCase($Matches[1].ToLower()) ) mode and not protecting interception or tampering. " 
+                        }
+                        { !($_.Split("`n") -match '(?<=mx: ).*$') } {
+                            $mtaAdvisory = "The MTA-STS file doesn't have any MX record configured. " 
+                        }
+                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( !(Get-MxMta -domainName $domain -mtsStsFileContents $mtsStsFile) ) } { 
+                            $mtaAdvisory = "The MTA-STS file MX records don't match with the MX records configured in the domain. " 
+                        }
+                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( Resolve-DnsName -Name $domain -Type MX | Select-Object -ExpandProperty NameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
+                            $mtaAdvisory = "At least one of the MX records configured in the MTA-STS file MX records list doesn't support TLS. " 
+                        }
+                        { $_ -notmatch 'max_age:\s*(604800|31557600)' } {
+                            $mtaAdvisory = "The MTA-STS max age configured in the file should be greater than 604800 seconds and less than 31557600 seconds. " 
+                        }
+                        default {
+                            $mtaAdvisory = "The domain has the MTA-STS DNS record and file configured and protected against interception or tampering."
+                        }
                     }
                 }
             }
+            $MtaReturnValues = New-Object psobject 
+            $MtaReturnValues | Add-Member NoteProperty "Name" $domain
+            $MtaReturnValues | Add-Member NoteProperty "mtaRecord" $mtaRecord
+            $MtaReturnValues | Add-Member NoteProperty "mtaAdvisory" $mtaAdvisory
+            $MtaObject.Add($MtaReturnValues)
+            $MtaReturnValues
+            
         }
     }
 
-    End {
-
-        $MtaReturnValues = New-Object psobject
-        $MtaReturnValues | Add-Member NoteProperty "mtaRecord" $mtaRecord
-        $MtaReturnValues | Add-Member NoteProperty "mtaAdvisory" $mtaAdvisory
-        $MtaObject.Add($MtaReturnValues)
-        $MtaReturnValues
-
-    }
+    End {}
 }
 
 #Invoke-MtaSts -Name microsoft.com -Verbose
