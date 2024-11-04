@@ -39,6 +39,7 @@ function Get-SPFRecord {
     Process {
         foreach ($domain in $Name) {
             $SPF = Resolve-DnsName -Name $domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+            
             if ($SPF -match "redirect") {
                 $redirect = $SPF.Split(" ")
                 $RedirectName = $redirect -match "redirect" -replace "redirect="
@@ -48,43 +49,53 @@ function Get-SPFRecord {
             # Check for multiple SPF records
             $RecipientServer = "v=spf1"
             $SPFCount = ([regex]::Matches($SPF, $RecipientServer)).Count
-
-            # Calculate total SPF Lenght
-            $SpfLenght = $SPF.Length
-
+            
             if ($null -eq $SPF) {
                 $SpfAdvisory = "Domain does not have an SPF record. To prevent abuse of this domain, please add an SPF record to it."
             }
-            Elseif ($SPFCount -gt 1) {
+            elseif ($SPFCount -gt 1) {
                 $SpfAdvisory = "Domain has more than one SPF record. Only one SPF record per domain is allowed. This is explicitly defined in RFC4408."     
-            }
-            foreach ($mechanism in $SPF) {
-                if ($mechanism.Length -gt 255) {
-                    $SpfAdvisory = "Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408." 
-                    $SpfTotalLenght = $SpfLenght += $mechanism.Length
-                } 
-
-                if ($SPF.Lenght -ge 450) {
-                    # See: https://datatracker.ietf.org/doc/html/rfc7208#section-3.4
-                    $SpfAdvisory += "Your SPF-record has more than 450 characters. This is SHOULD be avoided according to RFC7208."
+                $SpfTotalLenght = 0
+                foreach ($char in $SPF) {
+                    $SPFTotalLenght += $char.Length
+                    $SpfTotalLenght
                 }
             }
+            Else {
+                $SPF = $SPF -join ""
+                $SpfTotalLenght = $SPF.Lenght
 
-            switch -Regex ($SPF) {
-                '~all' {
-                    $SpfAdvisory = "An SPF-record is configured but the policy is not sufficiently strict."
-                }
-                '-all' {
-                    $SpfAdvisory = "An SPF-record is configured and the policy is sufficiently strict."
-                }
-                "\?all" {
-                    $SpfAdvisory = "Your domain has a valid SPF record but your policy is not effective enough."
-                }
-                '\+all' {
-                    $SpfAdvisory = "Your domain has a valid SPF record but your policy is not effective enough."
-                }
-                Default {
-                    $SpfAdvisory = "No qualifier found. Your domain has a SPF record but your policy is not effective enough."
+                foreach ($mechanism in $SPF) {
+                    switch ($SPF) {
+                        { $mechanism.Length -gt 255 } {
+                            # See: https://datatracker.ietf.org/doc/html/rfc4408#section-3.1.3 
+                            $SpfAdvisory = "Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408. " 
+                            $SpfTotalLenght += $mechanism.Length
+
+                        }
+                        { $mechanism.Length -ge 450 } {
+                            # See: https://datatracker.ietf.org/doc/html/rfc7208#section-3.4
+                            $SpfAdvisory = "Your SPF-record has more than 450 characters. This is SHOULD be avoided according to RFC7208. "
+                        }
+                    }
+            
+                    switch -Regex ($SPF) {
+                        '~all' {
+                            $SpfAdvisory += "An SPF-record is configured but the policy is not sufficiently strict."
+                        }
+                        '-all' {
+                            $SpfAdvisory += "An SPF-record is configured and the policy is sufficiently strict."
+                        }
+                        "\?all" {
+                            $SpfAdvisory += "Your domain has a valid SPF record but your policy is not effective enough."
+                        }
+                        '\+all' {
+                            $SpfAdvisory += "Your domain has a valid SPF record but your policy is not effective enough."
+                        }
+                        Default {
+                            $SpfAdvisory += "No qualifier found. Your domain has a SPF record but your policy is not effective enough."
+                        }
+                    }
                 }
             }
 
@@ -100,6 +111,6 @@ function Get-SPFRecord {
             }
         } 
     } end {}
-}
+} 
 
 Set-Alias gspf -Value Get-SPFRecord
