@@ -13,12 +13,24 @@ function Invoke-MtaSts {
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
-        [string]$ServerF
+        [string]$Server
     )
 
     begin {
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
+
+        if ($PSBoundParameters.ContainsKey('Server')) {
+            $SplatParameters = @{
+                'Server'      = $Server
+                'ErrorAction' = 'SilentlyContinue'
+            }
+        }
+        Else {
+            $SplatParameters = @{
+                'ErrorAction' = 'SilentlyContinue'
+            }
+        }
 
         $MtaObject = New-Object System.Collections.Generic.List[System.Object]
 
@@ -81,7 +93,7 @@ function Invoke-MtaSts {
                 [string]$mtsStsFileContents
             )
 
-            $_mx = Resolve-DnsName -Name $domainName -Type MX | Select-Object -ExpandProperty NameExchange
+            $_mx = Resolve-DnsName -Name $domainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange
             Write-Verbose "MX: $($_mx)"
             $_mta = $mtsStsFileContents.Split("`n") -match '(?<=mx: ).*$' | ForEach-Object { $_.Replace("mx:", "").Trim() }
             Write-Verbose "MTA: $($_mta)"
@@ -90,7 +102,7 @@ function Invoke-MtaSts {
             $ret = $_mx | ForEach-Object { $i = $_; $_mta | ForEach-Object { if ( $i -like $_ ) { [PSCustomObject]@{ MX = $i; MTA = $_ } } } }
             Write-Verbose "Matches: `n $($ret | Out-String)"
 
-            $res = Compare-Object -ReferenceObject $ret.MX -DifferenceObject (Resolve-DnsName -Name $domainName -Type MX | Select-Object -ExpandProperty NameExchange) # if differences, some MX records are not in MTA
+            $res = Compare-Object -ReferenceObject $ret.MX -DifferenceObject (Resolve-DnsName -Name $domainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange) # if differences, some MX records are not in MTA
             $res += Compare-Object -ReferenceObject ($ret.MTA | Select-Object -Unique) -DifferenceObject $_mta
 
             return (!$res)
@@ -147,7 +159,7 @@ function Invoke-MtaSts {
                         { $_.Split("`n") -match '(?<=mx: ).*$' -and ( !(Get-MxMta -domainName $domain -mtsStsFileContents $mtsStsFile) ) } { 
                             $mtaAdvisory = "The MTA-STS file MX records don't match with the MX records configured in the domain. " 
                         }
-                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( Resolve-DnsName -Name $domain -Type MX | Select-Object -ExpandProperty NameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
+                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( Resolve-DnsName -Name $domain -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
                             $mtaAdvisory = "At least one of the MX records configured in the MTA-STS file MX records list doesn't support TLS. " 
                         }
                         { $_ -notmatch 'max_age:\s*(604800|31557600)' } {
@@ -167,11 +179,7 @@ function Invoke-MtaSts {
             $MtaReturnValues
             
         }
-    }
-
-    End {}
+    } End {}
 }
-
-#Invoke-MtaSts -Name microsoft.com -Verbose
 
 Set-Alias -Name gmta -Value Get-MTASTS
