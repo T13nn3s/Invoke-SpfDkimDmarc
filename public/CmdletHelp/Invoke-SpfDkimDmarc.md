@@ -14,14 +14,14 @@ schema: 2.0.0
 
 ### domain
 ```
-Invoke-SpfDkimDmarc [-Name] <String> [[-DkimSelector] <String>] [[-Server] <String>] [-IncludeDNSSEC]
- [<CommonParameters>]
+Invoke-SpfDkimDmarc [-Name] <String[]> [[-DkimSelector] <String>] [[-Server] <String>] [-IncludeDNSSEC]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### file
 ```
 Invoke-SpfDkimDmarc [-File] <FileInfo> [[-DkimSelector] <String>] [[-Server] <String>] [-IncludeDNSSEC]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -87,7 +87,7 @@ Accept wildcard characters: False
 Specifies the domain for resolving the SPF, DKIM and DMARC-record.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: domain
 Aliases:
 
@@ -108,6 +108,21 @@ Aliases:
 
 Required: False
 Position: 4
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

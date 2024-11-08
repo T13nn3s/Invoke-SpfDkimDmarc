@@ -13,7 +13,7 @@ Function to resolve a DKIM record of a domain.
 ## SYNTAX
 
 ```
-Get-DKIMRecord [-Name] <String> [[-DkimSelector] <String>] [[-Server] <String>] [<CommonParameters>]
+Get-DKIMRecord [-Name] <String[]> [[-DkimSelector] <String>] [[-Server] <String>]   [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -72,7 +72,7 @@ Accept wildcard characters: False
 Specifies the domain for resolving the DKIM-record.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 

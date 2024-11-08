@@ -13,7 +13,7 @@ Function to resolve the SPF-record of a domain.
 ## SYNTAX
 
 ```
-Get-SPFRecord [-Name] <String> [[-Server] <String>] [<CommonParameters>]
+Get-SPFRecord [-Name] <String[]> [[-Server] <String>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -51,7 +51,7 @@ This example resolves the SPF-record for the domain binsec.nl against the DNS se
 Specifies the domain for resolving the SPF-record.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -72,6 +72,21 @@ Aliases:
 
 Required: False
 Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
