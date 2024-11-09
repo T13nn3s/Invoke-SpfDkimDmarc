@@ -70,50 +70,46 @@ function Get-SPFRecord {
                 $SpfTotalLenght = $SPF.Length
 
                 foreach ($mechanism in $SPF) {
-                    switch ($SPF) {
-                        { $mechanism.Length -gt 255 } {
-                            # See: https://datatracker.ietf.org/doc/html/rfc4408#section-3.1.3 
-                            $SpfAdvisory = "Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408. " 
-                            $SpfTotalLenght += $mechanism.Length
-
-                        }
-                        { $mechanism.Length -ge 450 } {
-                            # See: https://datatracker.ietf.org/doc/html/rfc7208#section-3.4
-                            $SpfAdvisory = "Your SPF-record has more than 450 characters. This is SHOULD be avoided according to RFC7208. "
-                        }
+                    if ($mechanism.Length -ge 450) {
+                        # See: https://datatracker.ietf.org/doc/html/rfc7208#section-3.4
+                        $SpfAdvisory += "Your SPF-record has more than 450 characters. This is SHOULD be avoided according to RFC7208. "
                     }
+                    elseif ($mechanism.Length -ge 255) {
+                        # See: https://datatracker.ietf.org/doc/html/rfc4408#section-3.1.3 
+                        $SpfAdvisory = "Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408. " 
+                    }
+                }
             
-                    switch -Regex ($SPF) {
-                        '~all' {
-                            $SpfAdvisory += "An SPF-record is configured but the policy is not sufficiently strict."
-                        }
-                        '-all' {
-                            $SpfAdvisory += "An SPF-record is configured and the policy is sufficiently strict."
-                        }
-                        "\?all" {
-                            $SpfAdvisory += "Your domain has a valid SPF record but your policy is not effective enough."
-                        }
-                        '\+all' {
-                            $SpfAdvisory += "Your domain has a valid SPF record but your policy is not effective enough."
-                        }
-                        Default {
-                            $SpfAdvisory += "No qualifier found. Your domain has a SPF record but your policy is not effective enough."
-                        }
+                switch -Regex ($SPF) {
+                    '~all' {
+                        $SpfAdvisory += "An SPF-record is configured but the policy is not sufficiently strict."
+                    }
+                    '-all' {
+                        $SpfAdvisory += "An SPF-record is configured and the policy is sufficiently strict."
+                    }
+                    "\?all" {
+                        $SpfAdvisory += "Your domain has a valid SPF record but your policy is not effective enough."
+                    }
+                    '\+all' {
+                        $SpfAdvisory += "Your domain has a valid SPF record but your policy is not effective enough."
+                    }
+                    Default {
+                        $SpfAdvisory += "No qualifier found. Your domain has a SPF record but your policy is not effective enough."
                     }
                 }
             }
+        }
 
-            foreach ($domain in $name) {
+        foreach ($domain in $name) {
 
-                $SpfReturnValues = New-Object psobject
-                $SpfReturnValues | Add-Member NoteProperty "Name" $domain
-                $SpfReturnValues | Add-Member NoteProperty "SPFRecord" "$($SPF)"
-                $SpfReturnValues | Add-Member NoteProperty "SPFRecordLength" "$($SpfTotalLenght)"
-                $SpfReturnValues | Add-Member NoteProperty "SPFAdvisory" $SpfAdvisory
-                $SpfObject.Add($SpfReturnValues)
-                $SpfReturnValues
-            }
-        } 
+            $SpfReturnValues = New-Object psobject
+            $SpfReturnValues | Add-Member NoteProperty "Name" $domain
+            $SpfReturnValues | Add-Member NoteProperty "SPFRecord" "$($SPF)"
+            $SpfReturnValues | Add-Member NoteProperty "SPFRecordLength" "$($SpfTotalLenght)"
+            $SpfReturnValues | Add-Member NoteProperty "SPFAdvisory" $SpfAdvisory
+            $SpfObject.Add($SpfReturnValues)
+            $SpfReturnValues
+        }
     } end {}
 } 
 

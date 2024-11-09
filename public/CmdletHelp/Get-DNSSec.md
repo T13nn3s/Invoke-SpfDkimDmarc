@@ -13,7 +13,7 @@ Function that checks whether DNSSEC is configured
 ## SYNTAX
 
 ```
-Get-DNSSec [-Name] <String[]> [[-Server] <String>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-DNSSec [-Name] <String[]> [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION

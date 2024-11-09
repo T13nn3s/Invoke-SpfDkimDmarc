@@ -75,18 +75,16 @@ function Invoke-SpfDkimDmarc {
             } 
             { $IncludeDNSSEC -and $Server -and !$DkimSelector } {
                 $Splat += @{ 
-                    'Server'        = $Server
-                    'IncludeDNSSEC' = $True
-                } 
+                    'Server' = $Server
+                }
             } 
             { $IncludeDNSSEC -and $Server -and $DkimSelector } {
                 $DKIMSplat += @{
-                    'DkimSelector'  = $DkimSelector
-                    'IncludeDNSSEC' = $True 
+                    'DkimSelector' = $DkimSelector
                 }
                 $Splat += @{ 
-                    'Server' = $Server
-                } 
+                    'Server' = $Server 
+                }
             } 
         }
 

@@ -13,7 +13,7 @@ Function to check for MTA-STS DNS TXT Record and Valid MTA-STS Policy
 ## SYNTAX
 
 ```
-Invoke-MtaSts [-Name] <String[]> [[-Server] <String>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Invoke-MtaSts [-Name] <String[]> [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
