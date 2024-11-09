@@ -17,7 +17,7 @@ function Invoke-SpfDkimDmarc {
             ValueFromPipelineByPropertyName = $True,
             HelpMessage = "Specifies the domain for resolving the SPF, DKIM and DMARC-record.",
             Position = 1)]
-        [string]$Name,
+        [string[]]$Name,
 
         [Parameter(
             Mandatory, ParameterSetName = 'file',
@@ -52,38 +52,49 @@ function Invoke-SpfDkimDmarc {
     } process {
 
         $Splat = @{}
+        $DKIMSplat = @{}
 
-        if ($Server) {
-            $Splat += @{
-                'Server' = $Server
-            }
-        } 
-        elseif ($DkimSelector -and $Server) {
-            $Splat += @{
-                'Server'       = $Server
-                'DkimSelector' = $DkimSelector
-            }
-        }
-        elseif ($IncludeDNSSEC -and $Server) {
-            $Splat += @{
-                'Server'        = $Server
-                'IncludeDNSSEC' = $True
-            }
-        }
-        elseif ($IncludeDNSSEC -and $Server -and $IncludeDNSSEC) {
-            $Splat += @{
-                'Server'       = $Server
-                'DkimSelector' = $DkimSelector
-                IncludeDNSSEC  = $True
-            }
+        switch -Regex ($True) { 
+            { $Server -and !$DkimSelector -and !$IncludeDNSSEC } {
+                $Splat += @{ 
+                    'Server' = $Server
+                } 
+            } 
+            { $DkimSelector -and !$Server -and !$IncludeDNSSEC } {
+                $DKIMSplat += @{
+                    'DkimSelector' = $DkimSelector
+                } 
+            } 
+            { $DkimSelector -and $Server -and !$IncludeDNSSEC } { 
+                $DKIMSplat += @{
+                    'DkimSelector' = $DkimSelector
+                }
+                $Splat += @{ 
+                    'Server' = $Server
+                }
+            } 
+            { $IncludeDNSSEC -and $Server -and !$DkimSelector } {
+                $Splat += @{ 
+                    'Server' = $Server
+                }
+            } 
+            { $IncludeDNSSEC -and $Server -and $DkimSelector } {
+                $DKIMSplat += @{
+                    'DkimSelector' = $DkimSelector
+                }
+                $Splat += @{ 
+                    'Server' = $Server 
+                }
+            } 
         }
 
         # If 'File' parameter is used
         if ($PSBoundParameters.ContainsKey('File')) {
             foreach ($Name in (Get-Content -Path $File)) {
                 $SPF = Get-SPFRecord -Name $Name @Splat
-                $DKIM = Get-DKIMRecord -Name $Name @Splat
+                $DKIM = Get-DKIMRecord -Name $Name @Splat @DKIMSplat
                 $DMARC = Get-DMARCRecord -Name $Name @Splat
+                $MTASTS = Invoke-MtaSTS -Name $Name @Splat
 
                 if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
                     $DNSSEC = Get-DNSSec -Name $Name @Splat
@@ -93,12 +104,13 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
                 $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
                 $InvokeReturnValues | Add-Member NoteProperty "SpfAdvisory" $SPF.SpfAdvisory
-                $InvokeReturnValues | Add-Member NoteProperty "SPFRecordLenght" $SPF.SPFRecordLenght
+                $InvokeReturnValues | Add-Member NoteProperty "SPFRecordLength" $SPF.SPFRecordLength
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
                 $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
-                $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
+                $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
 
                 if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
                     $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
@@ -110,36 +122,42 @@ function Invoke-SpfDkimDmarc {
             }
         }
 
-        # If 'Name' paramter is used
+        # If 'Name' parameter is used
         if ($PSBoundParameters.ContainsKey('Name')) {
-            $SPF = Get-SPFRecord -Name $Name @Splat
-            $DKIM = Get-DKIMRecord -Name $Name @Splat
-            $DMARC = Get-DMARCRecord -Name $Name @Splat
+            foreach ($domain in $Name) {
+                $SPF = Get-SPFRecord -Name $domain @Splat
+                $DKIM = Get-DKIMRecord -Name $domain @Splat @DKIMSplat
+                $DMARC = Get-DMARCRecord -Name $domain @Splat
+                $MTASTS = Invoke-MtaSTS -Name $domain @Splat
             
-            if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
-                $DNSSEC = Get-DNSSec -Name $Name @Splat
+                if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
+                    $DNSSEC = Get-DNSSec -Name $domain @Splat
+                }
+
+                $InvokeReturnValues = New-Object psobject
+                $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
+                $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
+                $InvokeReturnValues | Add-Member NoteProperty "SpfAdvisory" $SPF.SpfAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "SPFRecordLength" $SPF.SPFRecordLength
+                $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
+                $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
+                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+                $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
+                $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
+
+                if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
+                    $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
+                    $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
+                } 
+                $InvokeObject.Add($InvokeReturnValues)
+                $InvokeReturnValues
             }
-
-            $InvokeReturnValues = New-Object psobject
-            $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
-            $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
-            $InvokeReturnValues | Add-Member NoteProperty "SpfAdvisory" $SPF.SpfAdvisory
-            $InvokeReturnValues | Add-Member NoteProperty "SPFRecordLenght" $SPF.SPFRecordLenght
-            $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
-            $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-            $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
-            $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
-            $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
-
-            if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
-                $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
-                $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
-            } 
         }
     }
     end {
-        $InvokeObject.Add($InvokeReturnValues)
-        $InvokeReturnValues
+  
     }
 }
 

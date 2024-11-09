@@ -20,9 +20,9 @@
           <maml:description>
             <maml:para>Specifies the domain for resolving the DKIM-record.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -71,9 +71,9 @@
         <maml:description>
           <maml:para>Specifies the domain for resolving the DKIM-record.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -175,9 +175,9 @@ DKIMAdvisory : DKIM-record found.</dev:code>
           <maml:description>
             <maml:para>Specifies the domain for resolving the DMARC-record.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -202,9 +202,9 @@ DKIMAdvisory : DKIM-record found.</dev:code>
         <maml:description>
           <maml:para>Specifies the domain for resolving the DMARC-record.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -284,6 +284,122 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Get-DNSSec</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>DNSSec</command:noun>
+      <maml:description>
+        <maml:para>Function that checks whether DNSSEC is configured</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>DNSSEC creates a secure domain name system by adding cryptographic signatures to existing DNS records. These digital signatures are stored in DNS name servers alongside common record types like A, AAAA, MX, CNAME, etc. By checking its associated signature, you can verify that a requested DNS record comes from its authoritative name server and wasn't altered en-route, opposed to a fake record injected in a man-in-the-middle attack.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-DNSSec</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Specifies the domain name for testing for DNSSEC existance.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Server</maml:name>
+          <maml:description>
+            <maml:para>DNS Server to use.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Specifies the domain name for testing for DNSSEC existance.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Server</maml:name>
+        <maml:description>
+          <maml:para>DNS Server to use.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt;  Get-DNSSec -Name binsec.nl</dev:code>
+        <dev:remarks>
+          <maml:para>This example resolved the DNSSEC records for the specified domain.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>A Gentle Introduction to DNSSEC</maml:linkText>
+        <maml:uri>https://www.cloudflare.com/dns/dnssec/how-dnssec-works/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery</maml:linkText>
+        <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Get-SPFRecord</command:name>
       <command:verb>Get</command:verb>
       <command:noun>SPFRecord</command:noun>
@@ -302,9 +418,9 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
           <maml:description>
             <maml:para>Specifies the domain for resolving the SPF-record.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -329,9 +445,9 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
         <maml:description>
           <maml:para>Specifies the domain for resolving the SPF-record.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -406,6 +522,493 @@ binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and
       <maml:navigationLink>
         <maml:linkText>Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery</maml:linkText>
         <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Invoke-MtaSts</command:name>
+      <command:verb>Invoke</command:verb>
+      <command:noun>MtaSts</command:noun>
+      <maml:description>
+        <maml:para>Function to check for MTA-STS DNS TXT Record and Valid MTA-STS Policy</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>MTA-STS (Mail Transfer Agent Strict Transport Security) is a security mechanism designed to enforce the use of encrypted (TLS) connections for email in transit, helping to prevent man-in-the-middle attacks on email communication. It enables domain owners to specify that emails sent to their domain should only be accepted over secure TLS connections and to define a policy for handling messages if secure transmission fails.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Invoke-MtaSts</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Specifies the domain for resolving the MTA-STS record.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Server</maml:name>
+          <maml:description>
+            <maml:para>DNS Server to use.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Specifies the domain for resolving the MTA-STS record.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Server</maml:name>
+        <maml:description>
+          <maml:para>DNS Server to use.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String[]</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Invoke-MtaSts microsoft.com
+
+Name          mtaRecord                    mtaAdvisory
+----          ---------                    -----------
+microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record and file configured and protected against interception or tampering.</dev:code>
+        <dev:remarks>
+          <maml:para>This exmaple checks for the MTA-STS TXT record and valid MTA-STS Policy for the domain microoft.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt;  Invoke-MtaSts binsec.nl, microsoft.com
+
+Name          mtaRecord                    mtaAdvisory
+----          ---------                    -----------
+binsec.nl                                  The MTA-STS DNS record doesn't exist.
+microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record and file configured and protected against interception or tampering.</dev:code>
+        <dev:remarks>
+          <maml:para>This exmaple checks for the MTA-STS TXT record and valid MTA-STS Policy for the domain binsec.nl and microoft.com.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Invoke-MtaSts microsoft.com -Server 1.1.1.1
+
+Name          mtaRecord                    mtaAdvisory
+----          ---------                    -----------
+microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record and file configured and protected against interception or tampering.</dev:code>
+        <dev:remarks>
+          <maml:para>This exmaple checks for the MTA-STS TXT record and valid MTA-STS Policy for the domain microoft.com by using a different DNS Server. This can be used in a split DNS environment.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Invoke-SpfDkimDmarc</command:name>
+      <command:verb>Invoke</command:verb>
+      <command:noun>SpfDkimDmarc</command:noun>
+      <maml:description>
+        <maml:para>Module for checking SPF, DKIM, DMARC and MtaSts. This module also checks for the DNSSEC configuration.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Invoke-SpfDkimDmarc is a module within the PowerShell module named DomainHealthChecker that can check the SPF, DKIM and DMARC record for one or multiple domains. On installing this module you can use Invoke-SpfDKimDmarc to check the records. You can also check the records individually by using the cmdlets Get-SPFrecord, Get-DKIMRecord or by running the Get-DMARCRecord to check the record of a single domain.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Invoke-SpfDkimDmarc</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="2" aliases="Path">
+          <maml:name>File</maml:name>
+          <maml:description>
+            <maml:para>Show SPF, DKIM and DMARC-records from multiple domains from a file.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>DkimSelector</maml:name>
+          <maml:description>
+            <maml:para>Specify a custom DKIM selector.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+          <maml:name>Server</maml:name>
+          <maml:description>
+            <maml:para>DNS Server to use.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+          <maml:name>IncludeDNSSEC</maml:name>
+          <maml:description>
+            <maml:para>Include this switch to check for DNSSEC existance</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Invoke-SpfDkimDmarc</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Specifies the domain for resolving the SPF, DKIM and DMARC-record.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>DkimSelector</maml:name>
+          <maml:description>
+            <maml:para>Specify a custom DKIM selector.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+          <maml:name>Server</maml:name>
+          <maml:description>
+            <maml:para>DNS Server to use.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+          <maml:name>IncludeDNSSEC</maml:name>
+          <maml:description>
+            <maml:para>Include this switch to check for DNSSEC existance</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <maml:name>DkimSelector</maml:name>
+        <maml:description>
+          <maml:para>Specify a custom DKIM selector.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="2" aliases="Path">
+        <maml:name>File</maml:name>
+        <maml:description>
+          <maml:para>Show SPF, DKIM and DMARC-records from multiple domains from a file.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+        <dev:type>
+          <maml:name>FileInfo</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+        <maml:name>IncludeDNSSEC</maml:name>
+        <maml:description>
+          <maml:para>Include this switch to check for DNSSEC existance</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Specifies the domain for resolving the SPF, DKIM and DMARC-record.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+        <maml:name>Server</maml:name>
+        <maml:description>
+          <maml:para>DNS Server to use.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.IO.FileInfo</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Invoke-spfDkimDmarc binsec.nl
+
+Name            : binsec.nl
+SpfRecord       : v=spf1 -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 11
+DmarcRecord     : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      :
+DkimSelector    : dkim
+DkimAdvisory    : We couldn't find a DKIM record associated with your domain.
+MtaRecord       :
+MtaAdvisory     : The MTA-STS DNS record doesn't exist.</dev:code>
+        <dev:remarks>
+          <maml:para>Checks the SPF, DMARC, DKIM and Mta configuration for the domain binsec.nl.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Invoke-spfDkimDmarc binsec.nl, microsoft.com -IncludeDNSSEC
+
+Name            : binsec.nl
+SpfRecord       : v=spf1 -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 11
+DmarcRecord     : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      :
+DkimSelector    : dkim
+DkimAdvisory    : We couldn't find a DKIM record associated with your domain.
+MtaRecord       :
+MtaAdvisory     : The MTA-STS DNS record doesn't exist.
+DnsSec          : Domain is DNSSEC signed.
+DnsSecAdvisory  : Great! DNSSEC is enabled on your domain.
+
+Name            : microsoft.com
+SpfRecord       : v=spf1 include:_spf-a.microsoft.com include:_spf-b.microsoft.com include:_spf-c.microsoft.com include:_spf-ssg-a.msft.net include:spf-a.ho
+                  tmail.com include:_spf1-meo.microsoft.com -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 184
+DmarcRecord     : v=DMARC1; p=reject; pct=100; rua=mailto:itex-rua@microsoft.com; ruf=mailto:itex-ruf@microsoft.com; fo=1
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCPkb8bu8RGWeJGk3hJrouZXIdZ+HTp/azRp8IUOHp5wKvPUAi/54PwuLscUjRk4Rh3hjIkMpKRfJJXPxWb
+                  rT7eMLric7f/S0h+qF4aqIiQqHFCDAYfMnN6V3Wbke2U5EGm0H/cAUYkaf2AtuHJ/rdY/EXaldAm00PgT9QQMez66QIDAQAB;
+DkimSelector    : selector2
+DkimAdvisory    : DKIM-record found.
+MtaRecord       : v=STSv1; id=20190225000000Z;
+MtaAdvisory     : The domain has the MTA-STS DNS record and file configured and protected against interception or tampering.
+DnsSec          : No DNSKEY records found.
+DnsSecAdvisory  : Enable DNSSEC on your domain. DNSSEC decreases the vulnerability to DNS attacks.</dev:code>
+        <dev:remarks>
+          <maml:para>Checks the SPF, DMARC, DKIM, Mta and DNSSEC configuration for the domains binsec.nl and microsoft.com.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Invoke-spfDkimDmarc binsec.nl, microsoft.com -IncludeDNSSEC -DkimSelector selector2 -server 1.1.1.1
+
+Name            : binsec.nl
+SpfRecord       : v=spf1 -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 11
+DmarcRecord     : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      :
+DkimSelector    : selector2
+DkimAdvisory    : No DKIM-record found for selector selector2._domainkey.binsec.nl
+MtaRecord       :
+MtaAdvisory     : The MTA-STS DNS record doesn't exist.
+DnsSec          : Domain is DNSSEC signed.
+DnsSecAdvisory  : Great! DNSSEC is enabled on your domain.
+
+Name            : microsoft.com
+SpfRecord       : v=spf1 include:_spf-a.microsoft.com include:_spf-b.microsoft.com include:_spf-c.microsoft.com include:_spf-ssg-a.msft.net include:spf-a.ho
+                  tmail.com include:_spf1-meo.microsoft.com -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 184
+DmarcRecord     : v=DMARC1; p=reject; pct=100; rua=mailto:itex-rua@microsoft.com; ruf=mailto:itex-ruf@microsoft.com; fo=1
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCPkb8bu8RGWeJGk3hJrouZXIdZ+HTp/azRp8IUOHp5wKvPUAi/54PwuLscUjRk4Rh3hjIkMpKRfJJXPxWb
+                  rT7eMLric7f/S0h+qF4aqIiQqHFCDAYfMnN6V3Wbke2U5EGm0H/cAUYkaf2AtuHJ/rdY/EXaldAm00PgT9QQMez66QIDAQAB;
+DkimSelector    : selector2
+DkimAdvisory    : DKIM-record found.
+MtaRecord       : v=STSv1; id=20190225000000Z;
+MtaAdvisory     : The domain has the MTA-STS DNS record and file configured and protected against interception or tampering.
+DnsSec          : No DNSKEY records found.
+DnsSecAdvisory  : Enable DNSSEC on your domain. DNSSEC decreases the vulnerability to DNS attacks.</dev:code>
+        <dev:remarks>
+          <maml:para>Checks the SPF, DMARC, DKIM for dkimselector selector2, Mta and DNSSEC configuration for the domains binsec.nl and microsoft.com using 1.1.1.1 as the DNS Server for the lookup.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>Invoke-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domains.txt -server 1.1.1.1 -DkimSelector zendesk1
+
+Name            : binsec.nl
+SpfRecord       : v=spf1 -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 11
+DmarcRecord     : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      :
+DkimSelector    : zendesk1
+MtaRecord       :
+MtaAdvisory     : The MTA-STS DNS record doesn't exist.
+
+Name            : itsecuritymatters.nl
+SpfRecord       : v=spf1 include:spf.protection.outlook.com -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 46
+DmarcRecord     : v=DMARC1; p=reject; pct=100;
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      :
+DkimSelector    : zendesk1
+MtaRecord       :
+MtaAdvisory     : The MTA-STS DNS record doesn't exist.
+
+Name            : microsoft.com
+SpfRecord       : v=spf1 include:_spf-a.microsoft.com include:_spf-b.microsoft.com include:_spf-c.microsoft.com include:_spf-ssg-a.msft.net include:spf-a.ho
+                  tmail.com include:_spf1-meo.microsoft.com -all
+SpfAdvisory     : An SPF-record is configured and the policy is sufficiently strict.
+SPFRecordLength : 184
+DmarcRecord     : v=DMARC1; p=reject; pct=100; rua=mailto:itex-rua@microsoft.com; ruf=mailto:itex-ruf@microsoft.com; fo=1
+DmarcAdvisory   : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord      :
+DkimSelector    : zendesk1
+MtaRecord       : v=STSv1; id=20190225000000Z;
+MtaAdvisory     : The domain has the MTA-STS DNS record and file configured and protected against interception or tampering.</dev:code>
+        <dev:remarks>
+          <maml:para>Checks the SPF, DMARC, DKIM for dkimselector zendesk1, Mta and DNSSEC configuration for the domains binsec.nl, itsecuritymatters.nl, microsoft.com using 1.1.1.1 as the DNS Server for the lookup. The domains are listed in the file 'domains.txt'.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

@@ -13,7 +13,8 @@ Function to resolve a DMARC record of a domain.
 ## SYNTAX
 
 ```
-Get-DMARCRecord [-Name] <String> [[-Server] <String>] [-DkimSelector <String>] [<CommonParameters>]
+Get-DMARCRecord [-Name] <String[]> [[-Server] <String>] 
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -53,7 +54,7 @@ This example resolves the DMARC record for the domain binsec.nl agains the DNS s
 Specifies the domain for resolving the DMARC-record.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -74,21 +75,6 @@ Aliases:
 
 Required: False
 Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DkimSelector
-{{ Fill DkimSelector Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

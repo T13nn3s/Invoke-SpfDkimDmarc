@@ -9,7 +9,7 @@ function Get-DNSSec {
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
             HelpMessage = "Specifies the domain name for testing for DNSSEC existance."
-        )][string]$Name,
+        )][string[]]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
@@ -29,7 +29,7 @@ function Get-DNSSec {
         }
         Else {
             $SplatParameters = @{
-               'ErrorAction' = 'SilentlyContinue'
+                'ErrorAction' = 'SilentlyContinue'
             }
         }
 
@@ -38,26 +38,28 @@ function Get-DNSSec {
 
     process {
 
-        $DnsSec_record = Resolve-DnsName -Name $Name -Type 'DNSKEY' @SplatParameters
-        foreach ($record in $DnsSec_record) {
-            if ($record.type -contains "DNSKEY") {
-                $DnsSec = "Domain is DNSSEC signed."
-                $DnsSecAdvisory = "Great! DNSSEC is enabled on your domain."
+        foreach ($domain in $Name) {
+            $DnsSec_record = Resolve-DnsName -Name $domain -Type 'DNSKEY' @SplatParameters
+            foreach ($record in $DnsSec_record) {
+                if ($record.type -contains "DNSKEY") {
+                    $DnsSec = "Domain is DNSSEC signed."
+                    $DnsSecAdvisory = "Great! DNSSEC is enabled on your domain."
+                }
+                Else {
+                    $DnsSec = "No DNSKEY records found."
+                    $DnsSecAdvisory = "Enable DNSSEC on your domain. DNSSEC decreases the vulnerability to DNS attacks."
+                }
             }
-            Else {
-                $DnsSec = "No DNSKEY records found."
-                $DnsSecAdvisory = "Enable DNSSEC on your domain. DNSSEC decreases the vulnerability to DNS attacks."
-            }
+
+            $DnsSecReturnValues = New-Object psobject
+            $DnsSecReturnValues | Add-Member NoteProperty "Name" $domain
+            $DnsSecReturnValues | Add-Member NoteProperty "DNSSEC" $DnsSec
+            $DnsSecReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DnsSecAdvisory
+            $DnsSecObject.Add($DnsSecReturnValues)
+            $DnsSecReturnValues
         }
     }
 
-    end {
-        $DnsSecReturnValues = New-Object psobject
-        $DnsSecReturnValues | Add-Member NoteProperty "Name" $Name
-        $DnsSecReturnValues | Add-Member NoteProperty "DNSSEC" $DnsSec
-        $DnsSecReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DnsSecAdvisory
-        $DnsSecObject.Add($DnsSecReturnValues)
-        $DnsSecReturnValues
-    }
+    end {}
 }
 Set-Alias -Name gdnssec -Value Get-DNSSEC
