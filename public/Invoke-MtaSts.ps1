@@ -1,5 +1,5 @@
 <#>
-.HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-MTASTS.md'
+.HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md'
 #>
 function Invoke-MtaSts {
     [CmdletBinding()]
