@@ -38,8 +38,11 @@ function Get-SPFRecord {
 
     Process {
         foreach ($domain in $Name) {
+
+            # Get SPF record from specified domain
             $SPF = Resolve-DnsName -Name $domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             
+            # Checks for SPF redirect and follow the redirect
             if ($SPF -match "redirect") {
                 $redirect = $SPF.Split(" ")
                 $RedirectName = $redirect -match "redirect" -replace "redirect="
@@ -50,6 +53,7 @@ function Get-SPFRecord {
             $RecipientServer = "v=spf1"
             $SPFCount = ([regex]::Matches($SPF, $RecipientServer)).Count
             
+            # If there is no SPF record 
             if ($null -eq $SPF) {
                 $SpfAdvisory = "Domain does not have an SPF record. To prevent abuse of this domain, please add an SPF record to it."
             }
@@ -63,7 +67,7 @@ function Get-SPFRecord {
             }
             Else {
                 $SPF = $SPF -join ""
-                $SpfTotalLenght = $SPF.Lenght
+                $SpfTotalLenght = $SPF.Length
 
                 foreach ($mechanism in $SPF) {
                     switch ($SPF) {
