@@ -12,7 +12,7 @@
 RootModule = 'DomainHealthChecker.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.6'
+ModuleVersion = '1.7'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Desktop'
@@ -125,7 +125,7 @@ PrivateData = @{
  } # End of PrivateData hashtable
 
 # HelpInfo URI of this module
-HelpInfoURI = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/README.md'
+HelpInfoURI = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''
