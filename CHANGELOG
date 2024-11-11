@@ -4,7 +4,28 @@
 
 All notable updates on the module will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+
+[1.7] - 9-11-2024
+### Added:
+- New function `Get-MTASTS`. (#41)
+- Added support for multiple values for the `-Name` parameter. (#43)
+
+### Updated:
+- Default DKIM-selectors.
+
+### Fixed:
+- DkimSelector not working for Invoke-SpfDkimDmarc (#37).
+- Typo in SPF Length (#38 #42).
+- SPF check not correct (#44).
+- SPF Length (#45).
+- DkimSelector not working for Invoke-SpfDkimDmarc (#37).
+
+### Changed:
+- Updated the Readme/help docs (#40)
+
+## New Contributors
+- @Settleman made their first contribution in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/issues/41
 
 [1.6] - 25-4-2023
 ### Added
