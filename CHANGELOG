@@ -24,6 +24,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Changed:
 - Updated the Readme/help docs (#40)
 
+## New Contributors
+- @Settleman made their first contribution in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/issues/41
+
 [1.6] - 25-4-2023
 ### Added
 - Added `-IncludeDNSSEC` if DNSKEY records can be found. As per requested in #27.
