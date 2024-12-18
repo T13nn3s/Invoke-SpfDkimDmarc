@@ -6,6 +6,10 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+[1.7.1] - 18-12-2024
+### Fixed
+- Error when no SPFrecords are present (#48)
+
 [1.7] - 9-11-2024
 ### Added:
 - New function `Get-MTASTS`. (#41)

@@ -51,7 +51,7 @@ function Get-SPFRecord {
 
             # Check for multiple SPF records
             $RecipientServer = "v=spf1"
-            $SPFCount = ([regex]::Matches($SPF, $RecipientServer)).Count
+            $SPFCount = ($SPF -match $RecipientServer).count
             
             # If there is no SPF record 
             if ($null -eq $SPF) {
