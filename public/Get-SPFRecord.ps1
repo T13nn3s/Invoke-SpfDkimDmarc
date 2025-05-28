@@ -98,19 +98,121 @@ function Get-SPFRecord {
                     }
                 }
             }
-        }
+        
+            # Starting Spf Dns Lookup Counter
+            # SPF record MUST not exceed 10 DNS Lookups
+            # See: https://datatracker.ietf.org/doc/html/rfc7208#section-4.6.4
+            Write-Verbose "Starting calculation of SPF DNS Lookup count"
+            $SpfDnsLookupCount = 0
+            $includedDomain
 
+            # Get the mechanisms that count towards the DNS lookup limit
+            $SpfDnsLookupCountMechanisms = $SPF -split " " | Where-Object { $_ -match "^(include:|a:|mx:|a$|mx$|ptr$)" }
+
+            foreach ($SpfDnsLookupCountMechanism in $SpfDnsLookupCountMechanisms) {
+                Write-Verbose "Processing mechanism: $SpfDnsLookupCountMechanism"
+                switch -Regex ($SpfDnsLookupCountMechanism) {
+                    "^include:(\S+)" {
+                        $SpfDnsLookupCount += 1
+                        $includedDomain = $Matches[1]
+                        try {
+                            $includedSpfRecord = Resolve-DnsName -Name $includedDomain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                            $includedSpfRecord -split " " | ForEach-Object {
+                                switch -Regex ($_) {
+                                    "^a:" {
+                                        $SpfDnsLookupCount += 1
+                                        Write-Verbose "Counting $($_) nested mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                    }
+                                    "^a$" {
+                                        $SpfDnsLookupCount += 1
+                                        Write-Verbose "Counting $($_) nested mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                    }
+                                    "^mx$" {
+                                        $SpfDnsLookupCount += 1
+                                        Write-Verbose "Counting $($_) nested mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                    }
+                                    "^ptr$" {
+                                        $SpfDnsLookupCount += 1
+                                        Write-Verbose "Counting $($_) nested mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                    }
+                                    "^include:(\S+)" {
+                                        Write-Verbose "Found nested include: $($Matches[1]) in $($SpfDnsLookupCountMechanism)"
+                                        $SpfDnsLookupCount += 1
+                                        try {
+                                            $nestedIncludedSpfRecord = Resolve-DnsName -Name $Matches[1] -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                                            switch -Regex ($nestedIncludedSpfRecord) {
+                                                "^include:(\S+)" {
+                                                    $SpfDnsLookupCount += 1
+                                                    Write-Verbose "Counting nested $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                                }
+                                                "^a:" {
+                                                    $SpfDnsLookupCount += 1
+                                                    Write-Verbose "Counting nested $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                                }
+                                                "^a$" {
+                                                    $SpfDnsLookupCount += 1
+                                                    Write-Verbose "Counting nested $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                                }
+                                                "^mx$" {
+                                                    $SpfDnsLookupCount += 1
+                                                    Write-Verbose "Counting nested $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                                }
+                                                "^ptr$" {
+                                                    $SpfDnsLookupCount += 1
+                                                    Write-Verbose "Counting nested $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                                                }
+                                            }                                     
+                                        }
+                                        Catch {
+                                            Write-Error "Failed to resolve SPF record for $($Matches[1])"
+                                        }
+                                    }
+                                }
+                            }
+                                        
+                        }
+                        Catch {
+                            Write-Error "Failed to resolve SPF record for $includedDomain"
+                        }
+                    }
+                    "^a:" {
+                        $SpfDnsLookupCount += 1
+                        Write-Verbose "Counting $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                    }
+                    "^a$" {
+                        $SpfDnsLookupCount += 1
+                        Write-Verbose "Counting $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                    }
+                    "^mx$" {
+                        $SpfDnsLookupCount += 1
+                        Write-Verbose "Counting $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                    }
+                    "^ptr$" {
+                        $SpfDnsLookupCount += 1
+                        Write-Verbose "Counting $($_) mechanism for DNS lookup, total so far: $SpfDnsLookupCount"
+                    }
+                }
+            }
+        }   
         foreach ($domain in $name) {
 
             $SpfReturnValues = New-Object psobject
             $SpfReturnValues | Add-Member NoteProperty "Name" $domain
             $SpfReturnValues | Add-Member NoteProperty "SPFRecord" "$($SPF)"
             $SpfReturnValues | Add-Member NoteProperty "SPFRecordLength" "$($SpfTotalLenght)"
+            if ($SpfDnsLookupCount -eq 10) {
+                $SpfReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" "$($SpfDnsLookupCount)/10 (Ok, but maximum DNS Lookups reached!)"
+            }
+            elseif ($SpfDnsLookupCount -gt 8) {
+                $SpfReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" "$($SpfDnsLookupCount)/10 (Ok, but watch your DNS Lookups!)"
+            }
+            else {
+                $SpfReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" "$($SpfDnsLookupCount)/10 (OK)"
+            }
             $SpfReturnValues | Add-Member NoteProperty "SPFAdvisory" $SpfAdvisory
             $SpfObject.Add($SpfReturnValues)
             $SpfReturnValues
         }
     } end {}
 } 
-
 Set-Alias gspf -Value Get-SPFRecord
