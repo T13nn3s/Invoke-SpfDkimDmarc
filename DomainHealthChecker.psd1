@@ -12,7 +12,7 @@
 RootModule = 'DomainHealthChecker.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.7.1'
+ModuleVersion = '1.8'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Desktop'

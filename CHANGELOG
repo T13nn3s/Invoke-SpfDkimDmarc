@@ -6,6 +6,13 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+[1.8.0] - 28-5-2025
+### Added 
+- Add SPF DNS-Lookup check (#16)
+
+### Fixed
+- Path with spaces not supported (#50)
+
 [1.7.1] - 18-12-2024
 ### Fixed
 - Error when no SPFrecords are present (#48)
