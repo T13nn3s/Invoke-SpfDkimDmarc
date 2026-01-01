@@ -2,6 +2,12 @@
 HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md'
 #>
 
+# Load private functions
+Get-ChildItem -Path ..\private\*.ps1 |
+ForEach-Object {
+    . $_.FullName
+}
+
 function Get-DKIMRecord {
     [CmdletBinding()]
     param(
@@ -22,6 +28,21 @@ function Get-DKIMRecord {
     )
 
     begin {
+
+        # Determine OS platform
+        try {
+            Write-Verbose "Determining OS platform"
+            $OsPlatform = (Get-OsPlatform).Platform
+        }
+        catch {
+            Write-Verbose "Failed to determine OS platform, defaulting to Windows"
+            $OsPlatform = "Windows"
+        }
+
+        # Linux or macOS: Check if dnsutils is installed
+        if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
+            Test-DnsUtilsInstalled -Verbose:$PSBoundParameters.Verbose
+        }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
@@ -70,8 +91,21 @@ function Get-DKIMRecord {
         foreach ($domain in $Name) {
     
             if ($DkimSelector) {
-                $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                Write-Verbose "Using custom DKIM selector: $DkimSelector"
+                Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
+
+                if ($OsPlatform -eq "Windows") {
+                    $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                }
+                elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                    $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" | Out-String).Trim()
+                }
+                elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                    $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" NS $PSBoundParameters.Server | Out-String).Trim()
+                }
+                
                 if ($DKIM.Type -eq "CNAME") {
+                    Write-Verbose "DKIM record is a CNAME, resolving to TXT record"
                     while ($DKIM.Type -eq "CNAME") {
                         $DKIMCname = $DKIM.NameHost
                         $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters 
@@ -96,7 +130,16 @@ function Get-DKIMRecord {
             }
             else {
                 foreach ($DkimSelector in $DkimSelectors) {
-                    $DKIM = Resolve-DnsName -Type TXT -Name  "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                    Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
+                    if ($OsPlatform -eq "Windows") {
+                        $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                    }
+                    elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                        $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" | Out-String).Trim()
+                    }
+                    elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                        $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" NS $PSBoundParameters.Server | Out-String).Trim()
+                    }
                     if ($DKIM.Type -eq "CNAME") {
                         while ($DKIM.Type -eq "CNAME") {
                             $DKIMCname = $DKIM.NameHost
@@ -112,7 +155,9 @@ function Get-DKIMRecord {
                         }
                     }
                     else {
-                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        if ($OsPlatform -eq "Windows") {
+                            $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        }
                         if ($null -eq $DKIM) {
                             $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                         }

@@ -1,6 +1,13 @@
 <#>
 .HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md'
 #>
+
+# Load private functions
+Get-ChildItem -Path ..\private\*.ps1 |
+ForEach-Object {
+    . $_.FullName
+}
+
 function Get-SPFRecord {
     [CmdletBinding()]
     param(
@@ -17,6 +24,22 @@ function Get-SPFRecord {
     )
 
     begin {
+
+        # Determine OS platform
+        try {
+            Write-Verbose "Determining OS platform"
+            $OsPlatform = (Get-OsPlatform).Platform
+        }
+        catch {
+            Write-Verbose "Failed to determine OS platform, defaulting to Windows"
+            $OsPlatform = "Windows"
+        }
+        
+
+        # Linux or macOS: Check if dnsutils is installed
+        if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
+            Test-DnsUtilsInstalled -Verbose:$PSBoundParameters.Verbose
+        }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
@@ -38,15 +61,32 @@ function Get-SPFRecord {
 
     Process {
         foreach ($domain in $Name) {
+            Write-Verbose "Processing domain: $domain"
 
             # Get SPF record from specified domain
-            $SPF = Resolve-DnsName -Name $domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+            if ($OsPlatform -eq "Windows") {
+                $SPF = Resolve-DnsName -Name $domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+            }
+            Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                $SPF = $(dig TXT $domain +short | grep "v=spf1" | Out-String)
+            }
+            Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                $SPF = $(dig TXT $domain +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+            }
             
             # Checks for SPF redirect and follow the redirect
             if ($SPF -match "redirect") {
                 $redirect = $SPF.Split(" ")
                 $RedirectName = $redirect -match "redirect" -replace "redirect="
-                $SPF = Resolve-DnsName -Name "$RedirectName" -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                if ($OsPlatform -eq "Windows") {
+                    $SPF = Resolve-DnsName -Name "$RedirectName" -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                }
+                elseif ($OsPlatform -eq "macOS" -or $POslatform -eq "Linux") {
+                    $SPF = $(dig TXT $RedirectName +short | grep "v=spf1" | Out-String)
+                }
+                Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                    $SPF = $(dig TXT $RedirectName +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                }
             }
 
             # Check for multiple SPF records
@@ -116,7 +156,16 @@ function Get-SPFRecord {
                         $SpfDnsLookupCount += 1
                         $includedDomain = $Matches[1]
                         try {
-                            $includedSpfRecord = Resolve-DnsName -Name $includedDomain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                            if ($OsPlatform -eq "Windows") {
+                                $includedSpfRecord = Resolve-DnsName -Name $includedDomain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                            }
+                            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                                $includedSpfRecord = $(dig TXT $includedDomain +short | grep "v=spf1" | Out-String)
+                            }
+                            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                                $includedSpfRecord = $(dig TXT $includedDomain +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                            }
+                            
                             $includedSpfRecord -split " " | ForEach-Object {
                                 switch -Regex ($_) {
                                     "^a:" {
@@ -139,7 +188,14 @@ function Get-SPFRecord {
                                         Write-Verbose "Found nested include: $($Matches[1]) in $($SpfDnsLookupCountMechanism)"
                                         $SpfDnsLookupCount += 1
                                         try {
-                                            $nestedIncludedSpfRecord = Resolve-DnsName -Name $Matches[1] -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                                            if ($OsPlatform -eq "Windows") {
+                                                $nestedIncludedSpfRecord = Resolve-DnsName -Name $Matches[1] -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
+                                            } elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                                                $nestedIncludedSpfRecord = $(dig TXT $Matches[1] +short | grep "v=spf1" | Out-String)
+                                            } elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                                                $nestedIncludedSpfRecord = $(dig TXT $Matches[1] +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                                            }
+                                            
                                             switch -Regex ($nestedIncludedSpfRecord) {
                                                 "^include:(\S+)" {
                                                     $SpfDnsLookupCount += 1
