@@ -37,7 +37,7 @@ function Invoke-MtaSts {
 
         # Linux or macOS: Check if dnsutils is installed
         if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
-            Test-DnsUtilsInstalled -Verbose:$PSBoundParameters.Verbose
+            Test-DnsUtilsInstalled
         }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
@@ -120,7 +120,7 @@ function Invoke-MtaSts {
                 $_mx = Resolve-DnsName -Name $DomainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange
             }
             elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
-                $_mx = $(dig MX $DomainName +short | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+                $_mx = $(dig MX $DomainName +short | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim().TrimEnd(".")
             }
             elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                 $_mx = $(dig MX $DomainName +short NS $PSBoundParameters.Server | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
@@ -128,10 +128,12 @@ function Invoke-MtaSts {
             
             Write-Verbose "MX: $($_mx)"
             $_mta = $MtsStsFileContents.Split("`n") -match '(?<=mx: ).*$' | ForEach-Object { $_.Replace("mx:", "").Trim() }
+            Write-Verbose "[DEBUG] MTA-STS File MX entries: $($_mta)"
             Write-Verbose "MTA: $($_mta)"
 
             # Get all MX and MTA matches
             $ret = $_mx | ForEach-Object { $i = $_; $_mta | ForEach-Object { if ( $i -like $_ ) { [PSCustomObject]@{ MX = $i; MTA = $_ } } } }
+            Write-Verbose "[DEBUG] ret var content: $ret"
             Write-Verbose "Matches: `n $($ret | Out-String)"
 
             if ($OsPlatform -eq "Windows") {
@@ -168,6 +170,7 @@ function Invoke-MtaSts {
             }
 
             try { 
+                Write-Verbose "Retrieving MTA-STS file from https://mta-sts.$($domain)/.well-known/mta-sts.txt"
                 $mtsStsFile = Invoke-WebRequest "https://mta-sts.$($domain)/.well-known/mta-sts.txt" -UseBasicParsing -DisableKeepAlive | Select-Object -ExpandProperty Content 
             }
             catch { 

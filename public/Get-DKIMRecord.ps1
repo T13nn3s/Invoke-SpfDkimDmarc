@@ -41,7 +41,7 @@ function Get-DKIMRecord {
 
         # Linux or macOS: Check if dnsutils is installed
         if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
-            Test-DnsUtilsInstalled -Verbose:$PSBoundParameters.Verbose
+            Test-DnsUtilsInstalled
         }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"

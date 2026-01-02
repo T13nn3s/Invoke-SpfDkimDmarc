@@ -37,7 +37,7 @@ function Get-DMARCRecord {
 
         # Linux or macOS: Check if dnsutils is installed
         if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
-            Test-DnsUtilsInstalled -Verbose:$PSBoundParameters.Verbose
+            Test-DnsUtilsInstalled
         }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
@@ -64,9 +64,11 @@ function Get-DMARCRecord {
             if ($OsPlatform -eq "Windows") {
                 Write-Verbose "Querying DMARC record for $domain"
                 $DMARC = Resolve-DnsName -Name "_dmarc.$($domain)" -Type TXT @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
-            } elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                 $DMARC = $(dig TXT "_dmarc.$($domain)" +short | Out-String).Trim()
-            } elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                 $DMARC = $(dig TXT "_dmarc.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
             }
             
@@ -76,22 +78,22 @@ function Get-DMARCRecord {
             }
             Else {
                 switch -Regex ($DMARC) {
-                ('p=none') {
+                    ('p=none') {
                         $DmarcAdvisory = "Domain has a valid DMARC record but the DMARC (subdomain) policy does not prevent abuse of your domain by phishers and spammers."
                     }
-                ('p=quarantine') {
+                    ('p=quarantine') {
                         $DmarcAdvisory = "Domain has a DMARC record and it is set to p=quarantine. To fully take advantage of DMARC, the policy should be set to p=reject."
                     }
-                ('p=reject') {
+                    ('p=reject') {
                         $DmarcAdvisory = "Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers. "
                     }
-                ('sp=none') {
+                    ('sp=none') {
                         $DmarcAdvisory += "The subdomain policy does not prevent abuse of your domain by phishers and spammers."
                     }
-                ('sp=quarantine') {
+                    ('sp=quarantine') {
                         $DmarcAdvisory += "The subdomain has a DMARC record and it is set to sp=quarantine. To prevent you subdomains configure the policy to sp=reject."
                     }
-                ('sp=reject') {
+                    ('sp=reject') {
                         $DmarcAdvisory += "The subdomain policy prevent abuse of your domain by phishers and spammers."
                     }
                 }
