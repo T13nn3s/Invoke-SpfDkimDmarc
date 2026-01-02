@@ -73,6 +73,8 @@ function Get-DKIMRecord {
             'k2' # Mailchimp / Mandrill
             'mxvault' # Global Micro
             'dkim' # Hetzner
+            'protonmail1' # ProtonMail
+            'protonmail2' # ProtonMail
             's1' # Sendgrid / NationBulder
             's2' # Sendgrid / NationBuilder
             'ctct1' # Constant Contact
@@ -98,10 +100,10 @@ function Get-DKIMRecord {
                     $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
-                    $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" | Out-String).Trim()
+                    $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
-                    $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" NS $PSBoundParameters.Server | Out-String).Trim()
+                    $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
                 }
                 
                 if ($DKIM.Type -eq "CNAME") {
@@ -119,7 +121,9 @@ function Get-DKIMRecord {
                     }
                 } 
                 else {
-                    $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    if ($OsPlatform -eq "Windows") {
+                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    }
                     if ($null -eq $DKIM) {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
@@ -135,10 +139,10 @@ function Get-DKIMRecord {
                         $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
-                        $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" | Out-String).Trim()
+                        $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
-                        $DKIM = $(dig +short TXT "$($DkimSelector)._domainkey.$($domain)" NS $PSBoundParameters.Server | Out-String).Trim()
+                        $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
                     }
                     if ($DKIM.Type -eq "CNAME") {
                         while ($DKIM.Type -eq "CNAME") {

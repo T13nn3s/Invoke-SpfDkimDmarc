@@ -65,9 +65,9 @@ function Get-DMARCRecord {
                 Write-Verbose "Querying DMARC record for $domain"
                 $DMARC = Resolve-DnsName -Name "_dmarc.$($domain)" -Type TXT @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             } elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
-                $DMARC = $(dig +short TXT "_dmarc.$($domain)" | Out-String).Trim()
+                $DMARC = $(dig TXT "_dmarc.$($domain)" +short | Out-String).Trim()
             } elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
-                $DMARC = $(dig +short TXT "_dmarc.$($domain)" NS $PSBoundParameters.Server | Out-String).Trim()
+                $DMARC = $(dig TXT "_dmarc.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
             }
             
             if ($null -eq $DMARC) {

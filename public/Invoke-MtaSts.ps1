@@ -1,6 +1,13 @@
 <#>
 .HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md'
 #>
+
+# Load private functions
+Get-ChildItem -Path ..\private\*.ps1 |
+ForEach-Object {
+    . $_.FullName
+}
+
 function Invoke-MtaSts {
     [CmdletBinding()]
     param(
@@ -17,6 +24,22 @@ function Invoke-MtaSts {
     )
 
     begin {
+
+        # Determine OS platform
+        try {
+            Write-Verbose "Determining OS platform"
+            $OsPlatform = (Get-OsPlatform).Platform
+        }
+        catch {
+            Write-Verbose "Failed to determine OS platform, defaulting to Windows"
+            $OsPlatform = "Windows"
+        }
+
+        # Linux or macOS: Check if dnsutils is installed
+        if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
+            Test-DnsUtilsInstalled -Verbose:$PSBoundParameters.Verbose
+        }
+
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
 
@@ -89,20 +112,39 @@ function Invoke-MtaSts {
         function Get-MxMta {
             [CmdletBinding()]
             param(
-                [string]$domainName,
-                [string]$mtsStsFileContents
+                [string]$DomainName,
+                [string]$MtsStsFileContents
             )
 
-            $_mx = Resolve-DnsName -Name $domainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange
+            if ($OsPlatform -eq "Windows") {
+                $_mx = Resolve-DnsName -Name $DomainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                $_mx = $(dig MX $DomainName +short | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                $_mx = $(dig MX $DomainName +short NS $PSBoundParameters.Server | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+            }
+            
             Write-Verbose "MX: $($_mx)"
-            $_mta = $mtsStsFileContents.Split("`n") -match '(?<=mx: ).*$' | ForEach-Object { $_.Replace("mx:", "").Trim() }
+            $_mta = $MtsStsFileContents.Split("`n") -match '(?<=mx: ).*$' | ForEach-Object { $_.Replace("mx:", "").Trim() }
             Write-Verbose "MTA: $($_mta)"
 
             # Get all MX and MTA matches
             $ret = $_mx | ForEach-Object { $i = $_; $_mta | ForEach-Object { if ( $i -like $_ ) { [PSCustomObject]@{ MX = $i; MTA = $_ } } } }
             Write-Verbose "Matches: `n $($ret | Out-String)"
 
-            $res = Compare-Object -ReferenceObject $ret.MX -DifferenceObject (Resolve-DnsName -Name $domainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange) # if differences, some MX records are not in MTA
+            if ($OsPlatform -eq "Windows") {
+                $NameExchange = (Resolve-DnsName -Name $DomainName -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange)
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                $NameExchange = $(dig MX $DomainName +short | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                $NameExchange = $(dig MX $DomainName +short NS $PSBoundParameters.Server | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+            }
+
+            $res = Compare-Object -ReferenceObject $ret.MX -DifferenceObject $NameExchange # if differences, some MX records are not in MTA
             $res += Compare-Object -ReferenceObject ($ret.MTA | Select-Object -Unique) -DifferenceObject $_mta
 
             return (!$res)
@@ -112,8 +154,18 @@ function Invoke-MtaSts {
 
         foreach ($domain in $Name) {
 
-            $mtsStsDns = (Resolve-DnsName -Name "_mta-sts.$($domain)" -Type TXT -QuickTimeout -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_mta-sts.$($domain)" -and $_.Strings -match "v=STSv1" } | Select-Object -ExpandProperty Strings) -join "`n"
-            Write-Verbose "mtsStsDns: $($mtsStsDns)"
+            if ($OsPlatform -eq "Windows") {
+                $mtsStsDns = (Resolve-DnsName -Name "_mta-sts.$($domain)" -Type TXT -QuickTimeout -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_mta-sts.$($domain)" -and $_.Strings -match "v=STSv1" } | Select-Object -ExpandProperty Strings) -join "`n"
+                Write-Verbose "mtsStsDns: $($mtsStsDns)"
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                $mtsStsDns = $(dig TXT "_mta-sts.$($domain)" +short | Out-String).Trim()
+                Write-Verbose "mtsStsDns: $($mtsStsDns)"
+            }
+            elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                $mtsStsDns = $(dig TXT "_mta-sts.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
+                Write-Verbose "mtsStsDns: $($mtsStsDns)"
+            }
 
             try { 
                 $mtsStsFile = Invoke-WebRequest "https://mta-sts.$($domain)/.well-known/mta-sts.txt" -UseBasicParsing -DisableKeepAlive | Select-Object -ExpandProperty Content 
@@ -140,6 +192,16 @@ function Invoke-MtaSts {
                 }
                 default {
 
+                    if ($OsPlatform -eq "Windows") {
+                        $DomainNameExchange = Resolve-DnsName -Name $domain -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange
+                    }
+                    elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                        $DomainNameExchange = $(dig MX $domain +short | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+                    }
+                    elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                        $DomainNameExchange = $(dig MX $domain +short NS $PSBoundParameters.Server | ForEach-Object { ($_ -split " ")[1] } | Out-String).Trim()
+                    }
+
                     switch -Regex ($mtsStsFile) {
                         { !$_ } {
                             $mtaAdvisory = "The MTA-STS file doesn't exist. "; continue 
@@ -148,7 +210,7 @@ function Invoke-MtaSts {
                             $mtaAdvisory = "The MTA-STS version is not configured in the file. The only options is STSv1. " 
                         }
                         { $_ -notmatch 'mode:\s*(enforce|none|testing)' } { 
-                            $mtaAdvisory = "The MTA-STS mode is not configured in the file. Options are Enforce, Testing and None. " 
+                            $mtaAdvisory = "The MTA-STS mode is not configured in the file. Options are Enforce, Testing and None." 
                         }
                         { $_ -match 'mode:\sF*(enforce|none|testing)' -and $_ -notmatch 'mode:\s*Enforce' } {
                             $mtaAdvisory = "The MTA-STS file is configured in $($null = $_ -match 'mode:\s*(enforce|none|testing)'; $cti.ToTitleCase($Matches[1].ToLower()) ) mode and not protecting interception or tampering. " 
@@ -156,10 +218,11 @@ function Invoke-MtaSts {
                         { !($_.Split("`n") -match '(?<=mx: ).*$') } {
                             $mtaAdvisory = "The MTA-STS file doesn't have any MX record configured. " 
                         }
-                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( !(Get-MxMta -domainName $domain -mtsStsFileContents $mtsStsFile) ) } { 
+                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( !(Get-MxMta -DomainName $domain -mtsStsFileContents $mtsStsFile) ) } { 
                             $mtaAdvisory = "The MTA-STS file MX records don't match with the MX records configured in the domain. " 
                         }
-                        { $_.Split("`n") -match '(?<=mx: ).*$' -and ( Resolve-DnsName -Name $domain -Type MX @SplatParameters | Select-Object -ExpandProperty NameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
+                        { $_.Split("`n") -match '(?<=mx: ).*$' -and (
+                                $DomainNameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
                             $mtaAdvisory = "At least one of the MX records configured in the MTA-STS file MX records list doesn't support TLS. " 
                         }
                         { $_ -notmatch 'max_age:\s*(604800|31557600)' } {
