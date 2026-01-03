@@ -15,7 +15,7 @@ RootModule = 'DomainHealthChecker.psm1'
 ModuleVersion = '1.8'
 
 # Supported PSEditions
-CompatiblePSEditions = 'Desktop'
+CompatiblePSEditions = @('Desktop','Core')
 
 # ID used to uniquely identify this module
 GUID = '9f882a16-ebe1-4e3d-8573-7e014c129d1f'
