@@ -102,10 +102,12 @@ function Get-DKIMRecord {
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                     $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
                     $DKIM = $DKIM -split '" "' -join ""
+                    $DKIM = ($DKIM -split "`n")[1]
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                     $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
                     $DKIM = $DKIM -split '" "' -join ""
+                    $DKIM = ($DKIM -split "`n")[1]
                 }
                 
                 if ($DKIM.Type -eq "CNAME") {
@@ -143,10 +145,12 @@ function Get-DKIMRecord {
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                         $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
                         $DKIM = $DKIM -split '" "' -join ""
+                        $DKIM = ($DKIM -split "`n")[1]
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                         $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
                         $DKIM = $DKIM -split '" "' -join ""
+                        $DKIM = ($DKIM -split "`n")[1]
                     }
                     if ($DKIM.Type -eq "CNAME") {
                         while ($DKIM.Type -eq "CNAME") {

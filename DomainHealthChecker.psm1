@@ -3,15 +3,15 @@ HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/Cmdle
 #>
 
 # Load public functions
-Get-ChildItem -Path $PSScriptRoot\public\*.ps1 | 
-ForEach-Object {
-    . $_.FullName
+$PublicFolder = Join-Path -Path $PSScriptRoot -ChildPath 'public'
+if (Test-Path -Path $PublicFolder) {
+    Get-ChildItem -Path $PublicFolder -Filter "*.ps1" -File | ForEach-Object { . $_.FullName }
 }
 
 # Load private functions
-Get-ChildItem -Path \private\*.ps1 | 
-ForEach-Object {
-    . $_.FullName
+$PrivateFolder = Join-Path -Path $PSScriptRoot -ChildPath 'private'
+if (Test-Path -Path $PrivateFolder) {
+    Get-ChildItem -Path $PrivateFolder -Filter "*.ps1" -File | ForEach-Object { . $_.FullName }
 }
 
 function Invoke-SpfDkimDmarc {
