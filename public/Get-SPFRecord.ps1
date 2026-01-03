@@ -27,7 +27,6 @@ function Get-SPFRecord {
 
         # Determine OS platform
         try {
-            Write-Verbose "Determining OS platform"
             $OsPlatform = (Get-OsPlatform).Platform
         }
         catch {
@@ -35,7 +34,6 @@ function Get-SPFRecord {
             $OsPlatform = "Windows"
         }
         
-
         # Linux or macOS: Check if dnsutils is installed
         if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
             Test-DnsUtilsInstalled
