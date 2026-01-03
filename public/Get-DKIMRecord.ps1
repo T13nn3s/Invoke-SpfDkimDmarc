@@ -3,7 +3,7 @@ HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/Cmdle
 #>
 
 # Load private functions
-Get-ChildItem -Path ..\private\*.ps1 |
+Get-ChildItem -Path $PSScriptRoot\..\private\*.ps1 |
 ForEach-Object {
     . $_.FullName
 }
@@ -101,9 +101,11 @@ function Get-DKIMRecord {
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                     $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
+                    $DKIM = $DKIM -split '" "' -join ""
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                     $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
+                    $DKIM = $DKIM -split '" "' -join ""
                 }
                 
                 if ($DKIM.Type -eq "CNAME") {
@@ -140,9 +142,11 @@ function Get-DKIMRecord {
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                         $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
+                        $DKIM = $DKIM -split '" "' -join ""
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                         $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
+                        $DKIM = $DKIM -split '" "' -join ""
                     }
                     if ($DKIM.Type -eq "CNAME") {
                         while ($DKIM.Type -eq "CNAME") {

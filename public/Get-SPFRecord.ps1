@@ -3,7 +3,7 @@
 #>
 
 # Load private functions
-Get-ChildItem -Path ..\private\*.ps1 |
+Get-ChildItem -Path $PSScriptRoot\..\private\*.ps1 |
 ForEach-Object {
     . $_.FullName
 }
@@ -67,9 +67,11 @@ function Get-SPFRecord {
             }
             Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                 $SPF = $(dig TXT $domain +short | grep "v=spf1" | Out-String)
+                $SPF = $SPF -split '" "' -join ""
             }
             Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                 $SPF = $(dig TXT $domain +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                $SPF = $SPF -split '" "' -join ""
             }
             
             # Checks for SPF redirect and follow the redirect
@@ -81,9 +83,11 @@ function Get-SPFRecord {
                 }
                 elseif ($OsPlatform -eq "macOS" -or $POslatform -eq "Linux") {
                     $SPF = $(dig TXT $RedirectName +short | grep "v=spf1" | Out-String)
+                    $SPF = $SPF -split '" "' -join ""
                 }
                 Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                     $SPF = $(dig TXT $RedirectName +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                    $SPF = $SPF -split '" "' -join ""
                 }
             }
 

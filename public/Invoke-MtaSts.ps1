@@ -3,7 +3,7 @@
 #>
 
 # Load private functions
-Get-ChildItem -Path ..\private\*.ps1 |
+Get-ChildItem -Path $PSScriptRoot\..\private\*.ps1 |
 ForEach-Object {
     . $_.FullName
 }
