@@ -51,6 +51,15 @@ function Invoke-SpfDkimDmarc {
     )
 
     begin {
+
+        # Check if there is an update available
+        try{
+            Update-ModuleVersion -Verbose:$False
+        }
+        catch {
+            Write-Verbose "No update check could be performed: $_"
+        }
+
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
 
