@@ -73,8 +73,9 @@ function Get-DKIMRecord {
             'k2' # Mailchimp / Mandrill
             'mxvault' # Global Micro
             'dkim' # Hetzner
-            'protonmail1' # ProtonMail
+            'protonmail' # ProtonMail
             'protonmail2' # ProtonMail
+            'protonmail3' # ProtonMail
             's1' # Sendgrid / NationBulder
             's2' # Sendgrid / NationBuilder
             'ctct1' # Constant Contact
@@ -84,7 +85,31 @@ function Get-DKIMRecord {
             'litesrv' # MailerLite
             'zendesk1' # Zendesk
             'zendesk2' # Zendesk
-        )
+            'amazonses' # Amazon SES
+            'zoho' # Zoho Mail / Campaigns
+            'zohomail' # Zoho Mail
+            'sfdc' # Salesforce
+            'hs1' # HubSpot
+            'hs2' # HubSpot
+            'pm' # Postmark
+            'sparkpost' # SparkPost
+            'sib' # Sendinblue / Brevo
+            'mailin' # Sendinblue (legacy)
+            'cm' # Campaign Monitor
+            'fm1' # Fastmail
+            'fm2' # Fastmail
+            'pp' # Proofpoint
+            'mimecast' # Mimecast
+            'ces' # Cisco Email Security
+            'mailgun' # Mailgun
+            'opentext' # OpenText
+            'sophos' # Sophos Email
+            'barracuda' # Barracuda
+            'default' # GoDaddy / secureserver.net
+            'dkim1' # cPanel / Exim
+            'plesk' # Plesk
+            'yandex' # Yandex Mail
+        )  
 
         $DKimObject = New-Object System.Collections.Generic.List[System.Object]
     }

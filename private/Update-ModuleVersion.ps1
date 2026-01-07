@@ -59,7 +59,7 @@ function Update-ModuleVersion {
             }
         }
     } end {
-        Write-Host "[*] Module version check completed."
+        Write-Verbose "Completed $($MyInvocation.MyCommand)"
     }
 }
 

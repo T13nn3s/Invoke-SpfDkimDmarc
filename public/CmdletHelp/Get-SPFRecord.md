@@ -25,11 +25,13 @@ This PowerShell function can resolve an SPF record of a emaildomain and give an 
 
 ### Example 1
 ```
-PS C:\> Get-SPFRecord -Name binsec.nl
+PS C:\> get-spfrecord binsec.nl
 
-Name      SPFRecord                              SPFAdvisory
-----      ---------                              -----------
-binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and the policy is sufficiently strict.
+Name                    : binsec.nl
+SPFRecord               : v=spf1 -all
+SPFRecordLength         : 11
+SPFRecordDnsLookupCount : 0/10 (OK)
+SPFAdvisory             : An SPF-record is configured and the policy is sufficiently strict.
 ```
 
 This example resolves the SPF record for the domain binsec.nl.
@@ -38,9 +40,11 @@ This example resolves the SPF record for the domain binsec.nl.
 ```
 PS C:\> Get-SPFRecord -Name binsec.nl -Server 10.0.0.1
 
-Name      SPFRecord                              SPFAdvisory
-----      ---------                              -----------
-binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and the policy is sufficiently strict.
+Name                    : binsec.nl
+SPFRecord               : v=spf1 -all
+SPFRecordLength         : 11
+SPFRecordDnsLookupCount : 0/10 (OK)
+SPFAdvisory             : An SPF-record is configured and the policy is sufficiently strict.
 ```
 
 This example resolves the SPF-record for the domain binsec.nl against the DNS server at 10.0.0.1.

@@ -182,6 +182,7 @@ function Invoke-MtaSts {
 
             switch -Regex ($mtsStsDns) {
                 { !$_ } {
+                    $mtaRecord = "No MTA-STS DNS record found."
                     $mtaAdvisory = "The MTA-STS DNS record doesn't exist. "; continue
                 }
                 { $_.Split("`n").Count -ne 1 } {
@@ -225,7 +226,7 @@ function Invoke-MtaSts {
                             $mtaAdvisory = "The MTA-STS file MX records don't match with the MX records configured in the domain. " 
                         }
                         { $_.Split("`n") -match '(?<=mx: ).*$' -and (
-                                $DomainNameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
+                            $DomainNameExchange | ForEach-Object { Test-MxTls -MxHostname $_ -Verbose } ) -contains $false } {
                             $mtaAdvisory = "At least one of the MX records configured in the MTA-STS file MX records list doesn't support TLS. " 
                         }
                         { $_ -notmatch 'max_age:\s*(604800|31557600)' } {
