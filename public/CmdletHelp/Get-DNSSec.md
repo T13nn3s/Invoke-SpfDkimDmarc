@@ -23,7 +23,7 @@ DNSSEC creates a secure domain name system by adding cryptographic signatures to
 
 ### Example 1
 ```powershell
-PS C:\>  Get-DNSSec -Name binsec.nl
+PS C:\> Get-DNSSec -Name binsec.nl
 ```
 
 This example resolved the DNSSEC records for the specified domain.

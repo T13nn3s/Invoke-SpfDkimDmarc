@@ -2,6 +2,12 @@
 HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md'
 #>
 
+# Load private functions
+Get-ChildItem -Path $PSScriptRoot\..\private\*.ps1 |
+ForEach-Object {
+    . $_.FullName
+}
+
 function Get-DKIMRecord {
     [CmdletBinding()]
     param(
@@ -22,6 +28,21 @@ function Get-DKIMRecord {
     )
 
     begin {
+
+        # Determine OS platform
+        try {
+            Write-Verbose "Determining OS platform"
+            $OsPlatform = (Get-OsPlatform).Platform
+        }
+        catch {
+            Write-Verbose "Failed to determine OS platform, defaulting to Windows"
+            $OsPlatform = "Windows"
+        }
+
+        # Linux or macOS: Check if dnsutils is installed
+        if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
+            Test-DnsUtilsInstalled
+        }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
@@ -52,6 +73,9 @@ function Get-DKIMRecord {
             'k2' # Mailchimp / Mandrill
             'mxvault' # Global Micro
             'dkim' # Hetzner
+            'protonmail' # ProtonMail
+            'protonmail2' # ProtonMail
+            'protonmail3' # ProtonMail
             's1' # Sendgrid / NationBulder
             's2' # Sendgrid / NationBuilder
             'ctct1' # Constant Contact
@@ -61,7 +85,31 @@ function Get-DKIMRecord {
             'litesrv' # MailerLite
             'zendesk1' # Zendesk
             'zendesk2' # Zendesk
-        )
+            'amazonses' # Amazon SES
+            'zoho' # Zoho Mail / Campaigns
+            'zohomail' # Zoho Mail
+            'sfdc' # Salesforce
+            'hs1' # HubSpot
+            'hs2' # HubSpot
+            'pm' # Postmark
+            'sparkpost' # SparkPost
+            'sib' # Sendinblue / Brevo
+            'mailin' # Sendinblue (legacy)
+            'cm' # Campaign Monitor
+            'fm1' # Fastmail
+            'fm2' # Fastmail
+            'pp' # Proofpoint
+            'mimecast' # Mimecast
+            'ces' # Cisco Email Security
+            'mailgun' # Mailgun
+            'opentext' # OpenText
+            'sophos' # Sophos Email
+            'barracuda' # Barracuda
+            'default' # GoDaddy / secureserver.net
+            'dkim1' # cPanel / Exim
+            'plesk' # Plesk
+            'yandex' # Yandex Mail
+        )  
 
         $DKimObject = New-Object System.Collections.Generic.List[System.Object]
     }
@@ -70,8 +118,25 @@ function Get-DKIMRecord {
         foreach ($domain in $Name) {
     
             if ($DkimSelector) {
-                $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                Write-Verbose "Using custom DKIM selector: $DkimSelector"
+                Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
+
+                if ($OsPlatform -eq "Windows") {
+                    $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                }
+                elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                    $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
+                    $DKIM = $DKIM -split '" "' -join ""
+                    $DKIM = ($DKIM -split "`n")[1]
+                }
+                elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                    $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
+                    $DKIM = $DKIM -split '" "' -join ""
+                    $DKIM = ($DKIM -split "`n")[1]
+                }
+                
                 if ($DKIM.Type -eq "CNAME") {
+                    Write-Verbose "DKIM record is a CNAME, resolving to TXT record"
                     while ($DKIM.Type -eq "CNAME") {
                         $DKIMCname = $DKIM.NameHost
                         $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters 
@@ -85,7 +150,9 @@ function Get-DKIMRecord {
                     }
                 } 
                 else {
-                    $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    if ($OsPlatform -eq "Windows") {
+                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    }
                     if ($null -eq $DKIM) {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
@@ -96,7 +163,20 @@ function Get-DKIMRecord {
             }
             else {
                 foreach ($DkimSelector in $DkimSelectors) {
-                    $DKIM = Resolve-DnsName -Type TXT -Name  "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                    Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
+                    if ($OsPlatform -eq "Windows") {
+                        $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                    }
+                    elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
+                        $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
+                        $DKIM = $DKIM -split '" "' -join ""
+                        $DKIM = ($DKIM -split "`n")[1]
+                    }
+                    elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
+                        $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
+                        $DKIM = $DKIM -split '" "' -join ""
+                        $DKIM = ($DKIM -split "`n")[1]
+                    }
                     if ($DKIM.Type -eq "CNAME") {
                         while ($DKIM.Type -eq "CNAME") {
                             $DKIMCname = $DKIM.NameHost
@@ -112,7 +192,9 @@ function Get-DKIMRecord {
                         }
                     }
                     else {
-                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        if ($OsPlatform -eq "Windows") {
+                            $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        }
                         if ($null -eq $DKIM) {
                             $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                         }

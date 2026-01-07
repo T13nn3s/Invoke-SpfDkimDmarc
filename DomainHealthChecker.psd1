@@ -12,10 +12,10 @@
 RootModule = 'DomainHealthChecker.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.8'
+ModuleVersion = '2.0'
 
 # Supported PSEditions
-CompatiblePSEditions = 'Desktop'
+CompatiblePSEditions = @('Desktop','Core', 'Windows', 'Linux', 'macOS')
 
 # ID used to uniquely identify this module
 GUID = '9f882a16-ebe1-4e3d-8573-7e014c129d1f'
@@ -30,7 +30,7 @@ CompanyName = ''
 Copyright = '(c) Martien van Dijk. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell module for checking SPF, DKIM, and DMARC records for one or multiple domains. This module also checks for the existence of MTA-STS and whether DNSSEC is configured.'
+Description = 'PowerShell module for checking SPF, DKIM, and DMARC records for one or multiple domains. This module also checks for the existence of MTA-STS and whether DNSSEC is configured. This module supports Windows, Linux, and macOS platforms with PowerShell Core.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.1'

@@ -2,10 +2,16 @@
 HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
 #>
 
-# Load functions
-Get-ChildItem -Path $PSScriptRoot\public\*.ps1 | 
-ForEach-Object {
-    . $_.FullName
+# Load public functions
+$PublicFolder = Join-Path -Path $PSScriptRoot -ChildPath 'public'
+if (Test-Path -Path $PublicFolder) {
+    Get-ChildItem -Path $PublicFolder -Filter "*.ps1" -File | ForEach-Object { . $_.FullName }
+}
+
+# Load private functions
+$PrivateFolder = Join-Path -Path $PSScriptRoot -ChildPath 'private'
+if (Test-Path -Path $PrivateFolder) {
+    Get-ChildItem -Path $PrivateFolder -Filter "*.ps1" -File | ForEach-Object { . $_.FullName }
 }
 
 function Invoke-SpfDkimDmarc {
@@ -45,6 +51,15 @@ function Invoke-SpfDkimDmarc {
     )
 
     begin {
+
+        # Check if there is an update available
+        try{
+            Update-ModuleVersion -Verbose:$False
+        }
+        catch {
+            Write-Verbose "No update check could be performed: $_"
+        }
+
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
 

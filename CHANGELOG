@@ -6,6 +6,17 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+[2.0] - 7-1-2026
+
+### Added
+- Added cross-platform support for macOS and Linux with PowerShell Core. (#39)
+- Added `Get-OsPlatform.ps1` for OS determining.
+- Added `Test-DnsUtilsInstalled.ps1` for checking if DNS utilities for `dig` is installed.
+- Added `Update-ModuleVersion.ps1` for automatic module version updating.
+
+### Changed
+- Updated README/help docs
+
 [1.8.0] - 28-5-2025
 ### Added 
 - Add SPF DNS-Lookup check (#16)
