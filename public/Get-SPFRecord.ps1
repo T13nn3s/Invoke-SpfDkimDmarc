@@ -15,8 +15,8 @@ function Get-SPFRecord {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Enter one or more domain names to resolve their SPF records."
-        )][string[]]$Name,
+            HelpMessage = "Enter one or more domain names to resolve their SPF records.")]
+        [string[]]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]

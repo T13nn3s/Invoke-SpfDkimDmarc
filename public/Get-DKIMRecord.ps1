@@ -15,8 +15,8 @@ function Get-DKIMRecord {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specifies the domain for resolving the DKIM-record."
-        )][string[]]$Name,
+            HelpMessage = "Specifies the domain for resolving the DKIM-record.")]
+        [string[]]$Name,
 
         [Parameter(Mandatory = $False,
             HelpMessage = "Specify a custom DKIM selector.")]

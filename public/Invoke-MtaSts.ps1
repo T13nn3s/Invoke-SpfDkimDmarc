@@ -15,8 +15,8 @@ function Invoke-MtaSts {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specifies the domain for resolving the MTA-STS record."
-        )][string[]]$Name,
+            HelpMessage = "Specifies the domain for resolving the MTA-STS record.")]
+        [string[]]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]
