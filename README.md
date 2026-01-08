@@ -48,6 +48,7 @@ After installing this module, you have the following cmdlets at your disposal.
 - `Get-DMARCRecord` to check the DMARC record for a single domain. This cmdlet has also an alias `gdmarc` for quick checks.
 - `Get-DNSSec` to check whether the domain is protected with DNSSEC. This cmdlet has also an alias `gdnssec` for quick checks.
 - `Invoke-MtaSts` to check for the existence of the record and also checks for a valid MTA-STS Policy.
+- `Get-BimiRecord` to check for the existance of the record and also checks if the DMARC policy is configured properly according the needs of BIMI.
 
 ## Split DNS environment
 If you are using a split DNS environment, you can use the `-Server` parameter to specify an alternative DNS server.

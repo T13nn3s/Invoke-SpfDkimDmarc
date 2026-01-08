@@ -29,6 +29,9 @@ function Get-DKIMRecord {
 
     begin {
 
+        Write-Verbose "Starting $($MyInvocation.MyCommand)"
+        $PSBoundParameters | Out-String | Write-Verbose
+
         # Determine OS platform
         try {
             Write-Verbose "Determining OS platform"
@@ -43,9 +46,6 @@ function Get-DKIMRecord {
         if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
             Test-DnsUtilsInstalled
         }
-
-        Write-Verbose "Starting $($MyInvocation.MyCommand)"
-        $PSBoundParameters | Out-String | Write-Verbose
         
         if ($PSBoundParameters.ContainsKey('Server')) {
             $SplatParameters = @{
