@@ -154,18 +154,43 @@ function Get-BimiRecord {
                 if ($bimiRecord -match "a=") {
                     Write-Verbose "Validating 'a=' (VMC) tag in BIMI record."
                     $VMX = $bimiRecord.Split("a=")[1].Split(";")[0].Trim()
-                    write-host $VMX
+
+                    # Check if the 'a=' tag contains a valid HTTPS URL
                     if ($VMX -match "^https://") {
                         Write-Verbose "'a=' (VMC) tag contains a valid HTTPS URL."
                         $BimiAdvisory += " 'a=' (VMC) tag contains a valid HTTPS URL."
                         Write-Verbose "Validate date of VMC certificate is not expired."
+                        
+                        # Download the VMC certificate
+                        # Split multiple certificates if present in the certificate chain
                         $VmcCertificate = (Invoke-WebRequest -Uri $VMX -UseBasicParsing).Content
+                        $certificates = $VmcCertificate -split '(?=-----BEGIN CERTIFICATE-----)' | Where-Object { $_ -match 'BEGIN CERTIFICATE' }
+
+                        foreach ($pem in $certificates) {
+                            $base64 = $pem -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\s', ''
+
+                            $certBytes = [System.Convert]::FromBase64String($base64)
+                            $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($certBytes)
+
+                            # Output the expiration date of the certificate (skip CA)
+                            $cert | Where-Object { $cert.Subject -notmatch "CA" } | ForEach-Object {                            
+                                if ($cert.NotAfter -lt (Get-Date)) {
+                                    Write-Verbose "VMC certificate is expired, expiration date: $($cert.NotAfter)"
+                                    $BimiAdvisory += " VMC certificate is expired, expiration date: $($cert.NotAfter). Please renew the certificate."
+                                }
+                                else {
+                                    Write-Verbose "VMC certificate is valid, expiration date: $($cert.NotAfter)."
+                                    $BimiAdvisory += " VMC certificate is valid, expiration date: $($cert.NotAfter)."
+                                }
+                            }
+                        }
                     }
                     else {
                         Write-Verbose "'a=' (VMC) tag does not contain a valid HTTPS URL."
                         $BimiAdvisory += " 'a=' (VMC) tag does not contain a valid HTTPS URL, it should start with 'https://'."
                     }
-                } else {
+                }
+                else {
                     Write-Verbose "No 'a=' (VMC) tag found in BIMI record."
                     $BimiAdvisory += " No 'a=' (VMC) tag found, it's recommended to include a VMC certificate."
                 }
