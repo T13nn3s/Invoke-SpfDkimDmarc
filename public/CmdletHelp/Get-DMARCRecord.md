@@ -1,14 +1,14 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md
+online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md
 schema: 2.0.0
 ---
 
 # Get-DMARCRecord
 
 ## SYNOPSIS
-Function to resolve a DMARC record of a domain.
+Retrieves and assesses a domain's DMARC record.
 
 ## SYNTAX
 
@@ -18,11 +18,7 @@ Get-DMARCRecord [-Name] <String[]> [[-Server] <String>]
 ```
 
 ## DESCRIPTION
-It is important to configure DMARC on your emaildomain.
-DMARC stands for Domain-based Message Authentication, Reporting and Conformance.
-It is a policy-based protocol for enforcing a specific policy to email traffic sent on behalf of an email domain.
-DMARC works closely with the SPF and DKIM records, to prevent email spoofing.
-This PowerShell function can resolve an DMARC record of a domain and give an advisory regarding the current configuration.
+Get-DMARCRecord queries the _dmarc TXT record for one or more domains, evaluates the DMARC policy and subdomain policy (p= and sp=), and returns a PSCustomObject per domain with properties: Name, DmarcRecord, and DmarcAdvisory. Supports Windows (Resolve-DnsName) and Linux/macOS (dig) and accepts an optional DNS server parameter for resolution.
 
 ## EXAMPLES
 
@@ -93,5 +89,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[Get-DMARCRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+[Get-DMARCRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
 
+[Project site on Github](github.com/T13nn3s/Invoke-SpfDkimDmarc/)

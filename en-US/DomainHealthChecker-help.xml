@@ -2,15 +2,206 @@
 <helpItems schema="maml" xmlns="http://msh">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Get-BimiRecord</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>BimiRecord</command:noun>
+      <maml:description>
+        <maml:para>Resolves and validates BIMI (Brand Indicators for Message Identification) records for one or more domains.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Get-BIMIRecord queries a domain's BIMI TXT record (optionally using a specified selector), evaluates the record contents, verifies the domain's DMARC policy for BIMI compatibility (requires p=quarantine or p=reject and pct=100), and inspects any referenced VMC certificate (from the a= tag) for a valid HTTPS URL and expiration. Returns a PSCustomObject per domain with properties: Name, BimiRecord, and BimiAdvisory. Cross-platform: uses Resolve-DnsName on Windows and dig on Linux/macOS (dnsutils required). Accepts an optional DNS server parameter for resolution.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-BimiRecord</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Specifies the domain for resolving the BIMI-record.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Selector</maml:name>
+          <maml:description>
+            <maml:para>Specify BIMI selector to query.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>Server</maml:name>
+          <maml:description>
+            <maml:para>DNS Server to use.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para></maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Specifies the domain for resolving the BIMI-record.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Selector</maml:name>
+        <maml:description>
+          <maml:para>Specify BIMI selector to query.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>Server</maml:name>
+        <maml:description>
+          <maml:para>DNS Server to use.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String[]</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-BIMIrecord binsec.nl | fl *
+
+Name         : binsec.nl
+BimiRecord   : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.</dev:code>
+        <dev:remarks>
+          <maml:para>Queries the BIMI record for the domain binsec.nl</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-BIMIRecord binsec.nl, dmarcadvisor.com
+
+Name             BimiRecord                                                                                                                                BimiAdvisory
+----             ----------                                                                                                                                ------------
+binsec.nl        We couldn't find a BIMI record associated with your domain.                                                                               DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
+dmarcadvisor.com v=BIMI1; l=https://bimi.eu.dmarcmanager.app/eu-2o4fmqie/default/logo.svg; a=https://bimi.eu.dmarcmanager.app/eu-2o4fmqie/default/cert.pem DMARC policy is set to p=reject, which is the best policy for BIMI to function. 'a=' (VMC) tag contains a valid HTTPS URL.</dev:code>
+        <dev:remarks>
+          <maml:para>Queries the BIMI record for the domains binsec.nl and dmarcadvisor.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-BIMIRecord bimigroup.org -server 1.1.1.1
+
+Name          BimiRecord                                       BimiAdvisory
+----          ----------                                       ------------
+bimigroup.org v=BIMI1; l=https://bimigroup.org/bimi-sq.svg; a= DMARC policy is set to p=reject, which is the best policy for BIMI to function. 'a=' (VMC) tag does not contain a valid HTTPS URL, it should start with 'https://'. It's recommended to use a valid HTTPS URL for VMC to prevent that scammers misuse your logo.</dev:code>
+        <dev:remarks>
+          <maml:para>Queries the BIMI record for the domain bimigroup.org using an alternative DNS server.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-BIMIecord.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-BIMIRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
+        <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Get-DKIMRecord</command:name>
       <command:verb>Get</command:verb>
       <command:noun>DKIMRecord</command:noun>
       <maml:description>
-        <maml:para>Function to resolve a DKIM record of a domain.</maml:para>
+        <maml:para>Retrieves and validates DKIM records for one or more domains.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>It is important to configure DKIM on an emaildomain and sending emailserver. DKIM stands for DomainKeys Identified Mail, and it's an verification protocol for verifying the legitimacy of the sender, to prevent email spoofing. This PowerShell function can resolve an DKIM record of an emaildomain and give an advisory regarding the current configuration. It's possible use a custom DKIM-selector.</maml:para>
+      <maml:para>Get-DKIMRecord queries DKIM records using a provided selector or a list of common selectors, follows CNAME chains to locate records, and reports findings and advisories per domain. It supports Windows (Resolve-DnsName) and Linux/macOS (dig), accepts an optional DNS server, and returns objects with Name, DkimRecord, DkimSelector, and DKIMAdvisory properties.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -51,6 +242,18 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para></maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
@@ -86,6 +289,18 @@
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
           <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -147,11 +362,15 @@ DKIMAdvisory : DKIM-record found.</dev:code>
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md</maml:uri>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-DKIMRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery</maml:linkText>
+        <maml:linkText>Get-DKIMRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
         <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -161,11 +380,11 @@ DKIMAdvisory : DKIM-record found.</dev:code>
       <command:verb>Get</command:verb>
       <command:noun>DMARCRecord</command:noun>
       <maml:description>
-        <maml:para>Function to resolve a DMARC record of a domain.</maml:para>
+        <maml:para>Retrieves and assesses a domain's DMARC record.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>It is important to configure DMARC on your emaildomain. DMARC stands for Domain-based Message Authentication, Reporting and Conformance. It is a policy-based protocol for enforcing a specific policy to email traffic sent on behalf of an email domain. DMARC works closely with the SPF and DKIM records, to prevent email spoofing. This PowerShell function can resolve an DMARC record of a domain and give an advisory regarding the current configuration.</maml:para>
+      <maml:para>Get-DMARCRecord queries the _dmarc TXT record for one or more domains, evaluates the DMARC policy and subdomain policy (p= and sp=), and returns a PSCustomObject per domain with properties: Name, DmarcRecord, and DmarcAdvisory. Supports Windows (Resolve-DnsName) and Linux/macOS (dig) and accepts an optional DNS server parameter for resolution.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -274,11 +493,15 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md</maml:uri>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-DMARCRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery</maml:linkText>
+        <maml:linkText>Get-DMARCRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
         <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -288,11 +511,11 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
       <command:verb>Get</command:verb>
       <command:noun>DNSSec</command:noun>
       <maml:description>
-        <maml:para>Function that checks whether DNSSEC is configured</maml:para>
+        <maml:para>Determines whether one or more domains are DNSSEC-signed.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>DNSSEC creates a secure domain name system by adding cryptographic signatures to existing DNS records. These digital signatures are stored in DNS name servers alongside common record types like A, AAAA, MX, CNAME, etc. By checking its associated signature, you can verify that a requested DNS record comes from its authoritative name server and wasn't altered en-route, opposed to a fake record injected in a man-in-the-middle attack.</maml:para>
+      <maml:para>Get-DNSSec queries DNSKEY records for the specified domain(s) and evaluates DNSSEC configuration (flags and protocol) per RFC4034. On Windows it uses Resolve-DnsName; on Linux/macOS it uses dig (dnsutils required). Returns PSCustomObject(s) with properties: Name, DNSSEC, and DnsSecAdvisory. Supports an optional -Server parameter to query a specific DNS server.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -317,6 +540,18 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
             <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para></maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -348,11 +583,23 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
         <dev:type>
-          <maml:name>System.String</maml:name>
+          <maml:name>System.String[]</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -377,7 +624,7 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt;  Get-DNSSec -Name binsec.nl</dev:code>
+        <dev:code>PS C:\&gt; Get-DNSSec -Name binsec.nl</dev:code>
         <dev:remarks>
           <maml:para>This example resolved the DNSSEC records for the specified domain.</maml:para>
         </dev:remarks>
@@ -386,15 +633,19 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md</maml:uri>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DNSSec.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>A Gentle Introduction to DNSSEC</maml:linkText>
         <maml:uri>https://www.cloudflare.com/dns/dnssec/how-dnssec-works/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery</maml:linkText>
+        <maml:linkText>Get-DNSSec is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
         <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -404,11 +655,11 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
       <command:verb>Get</command:verb>
       <command:noun>SPFRecord</command:noun>
       <maml:description>
-        <maml:para>Function to resolve the SPF-record of a domain.</maml:para>
+        <maml:para>Retrieves and evaluates SPF (Sender Policy Framework) records for one or more domains.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>It is important to configure an SPF record on your emaildomain. SPF stands for Sender Policy Framework, and it's an authentication protocol to prevent email spoofing. This PowerShell function can resolve an SPF record of a emaildomain and give an advisory regarding the current configuration.</maml:para>
+      <maml:para>Get-SPFRecord locates a domain's SPF TXT record (v=spf1), follows SPF redirects, counts nested DNS lookups (enforcing the RFC7208 limit), checks record and token lengths, and evaluates the SPF qualifier to produce actionable advisories. The cmdlet returns PSCustomObject(s) with properties: Name, SPFRecord, SPFRecordLength, SPFRecordDnsLookupCount, and SPFAdvisory. Cross-platform: uses Resolve-DnsName on Windows and dig on Linux/macOS; accepts an optional -Server parameter for custom DNS resolution.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -433,6 +684,18 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
             <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para></maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -464,11 +727,23 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
         <dev:type>
-          <maml:name>System.String</maml:name>
+          <maml:name>System.String[]</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -493,11 +768,13 @@ binsec.nl v=DMARC1; p=none; pct=100   Domain has a valid DMARC record but the DM
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; Get-SPFRecord -Name binsec.nl
+        <dev:code>PS C:\&gt; get-spfrecord binsec.nl
 
-Name      SPFRecord                              SPFAdvisory
-----      ---------                              -----------
-binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and the policy is sufficiently strict.</dev:code>
+Name                    : binsec.nl
+SPFRecord               : v=spf1 -all
+SPFRecordLength         : 11
+SPFRecordDnsLookupCount : 0/10 (OK)
+SPFAdvisory             : An SPF-record is configured and the policy is sufficiently strict.</dev:code>
         <dev:remarks>
           <maml:para>This example resolves the SPF record for the domain binsec.nl.</maml:para>
         </dev:remarks>
@@ -506,9 +783,11 @@ binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Get-SPFRecord -Name binsec.nl -Server 10.0.0.1
 
-Name      SPFRecord                              SPFAdvisory
-----      ---------                              -----------
-binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and the policy is sufficiently strict.</dev:code>
+Name                    : binsec.nl
+SPFRecord               : v=spf1 -all
+SPFRecordLength         : 11
+SPFRecordDnsLookupCount : 0/10 (OK)
+SPFAdvisory             : An SPF-record is configured and the policy is sufficiently strict.</dev:code>
         <dev:remarks>
           <maml:para>This example resolves the SPF-record for the domain binsec.nl against the DNS server at 10.0.0.1.</maml:para>
         </dev:remarks>
@@ -517,11 +796,15 @@ binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md</maml:uri>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery</maml:linkText>
+        <maml:linkText>Get-SPFRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
         <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -531,11 +814,11 @@ binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and
       <command:verb>Invoke</command:verb>
       <command:noun>MtaSts</command:noun>
       <maml:description>
-        <maml:para>Function to check for MTA-STS DNS TXT Record and Valid MTA-STS Policy</maml:para>
+        <maml:para>Validates a domain's MTA-STS DNS record and policy file and reports MX TLS support.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>MTA-STS (Mail Transfer Agent Strict Transport Security) is a security mechanism designed to enforce the use of encrypted (TLS) connections for email in transit, helping to prevent man-in-the-middle attacks on email communication. It enables domain owners to specify that emails sent to their domain should only be accepted over secure TLS connections and to define a policy for handling messages if secure transmission fails.</maml:para>
+      <maml:para>Invoke-MtaSts checks the _mta-sts TXT DNS record and downloads the MTA-STS policy file from https://mta-sts.&lt;domain&gt;/.well-known/mta-sts.txt. It validates record format (version and id), evaluates the policy file (version, mode, max_age, and listed mx entries), compares policy MX entries to actual MX DNS records, and tests whether MX hosts support STARTTLS. Returns PSCustomObject(s) with Name, mtaRecord, and mtaAdvisory properties. Cross-platform: uses Resolve-DnsName on Windows and dig on Linux/macOS; accepts an optional -Server parameter for custom DNS resolution.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -564,6 +847,18 @@ binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para></maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
@@ -587,6 +882,18 @@ binsec.nl v=spf1 include:_spf.transip.email -all An SPF-record is configured and
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
           <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -656,7 +963,15 @@ microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md</maml:uri>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MtaSts is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
+        <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -711,16 +1026,17 @@ microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
-          <maml:name>IncludeDNSSEC</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
           <maml:description>
-            <maml:para>Include this switch to check for DNSSEC existance</maml:para>
+            <maml:para></maml:para>
           </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
           <dev:type>
-            <maml:name>SwitchParameter</maml:name>
+            <maml:name>ActionPreference</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
+          <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
@@ -761,16 +1077,17 @@ microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
-          <maml:name>IncludeDNSSEC</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
           <maml:description>
-            <maml:para>Include this switch to check for DNSSEC existance</maml:para>
+            <maml:para></maml:para>
           </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
           <dev:type>
-            <maml:name>SwitchParameter</maml:name>
+            <maml:name>ActionPreference</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
+          <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -799,18 +1116,6 @@ microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
-        <maml:name>IncludeDNSSEC</maml:name>
-        <maml:description>
-          <maml:para>Include this switch to check for DNSSEC existance</maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
@@ -831,6 +1136,18 @@ microsoft.com v=STSv1; id=20190225000000Z; The domain has the MTA-STS DNS record
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
           <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -1008,7 +1325,15 @@ MtaAdvisory     : The domain has the MTA-STS DNS record and file configured and 
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md</maml:uri>
+        <maml:uri>https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Invoke-SpfDkimDmarc is part of the 'DomainHealthChecker' module, available on the PowerShellGallery</maml:linkText>
+        <maml:uri>https://www.powershellgallery.com/packages/DomainHealthChecker/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Project site on Github</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

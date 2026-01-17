@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
+HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
 #>
 
 # Load public functions
@@ -42,18 +42,25 @@ function Invoke-SpfDkimDmarc {
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.",
             Position = 4)]
-        [string]$Server
+        [string]$Server,
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = "Skip the update check on module.",
+            Position = 5)]
+        [switch]$SkipUpdateCheck
     )
 
     begin {
 
         # Check if there is an update available
+        if (!$SkipUpdateCheck) {
         try {
-            Update-ModuleVersion -Verbose:$False
+            Update-ModuleDomainHealthChecker -Verbose:$False
         }
         catch {
             Write-Verbose "No update check could be performed: $_"
         }
+    }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose

@@ -5,10 +5,10 @@ Checks the installed DomainHealthChecker module version and updates it if a newe
 .DESCRIPTION
 This function checks if there is a newer version of the DomainHealthChecker module available on the PowerShell Gallery.
 .EXAMPLE
-Update-ModuleVersion
+Update-ModuleDomainHealthChecker
 #>
 
-function Update-ModuleVersion {
+function Update-ModuleDomainHealthChecker {
     [CmdletBinding()]
     param()
 
@@ -44,13 +44,17 @@ function Update-ModuleVersion {
                         Write-Host "[+] Module updated successfully to version $CurrentVersionOnPowerShellGallery." -ForegroundColor Green
                     }
                     catch {
+                        Write-Verbose "Error occurred during module update: $_. Trying alternative update method."
+                        Install-Module -Name DomainHealthChecker -Force -AllowClobber -ErrorAction Stop
+                        
+                    } finally {
                         Write-Verbose "Error occurred while updating module: $_"
                         Write-Error "[-] Failed to update the DomainHealthChecker module. Please try updating it manually."
                     }
                 }
                 { $_.ToLower() -eq 'n' } {
                     Write-Verbose "User chose not to update 'DomainHealthChecker'."
-                    Write-Host "[*] Module update skipped. You can update the module later by running Update-ModuleVersion." -ForegroundColor Yellow
+                    Write-Host "[*] Module update skipped. You can update the module later by running Update-ModuleDomainHealthChecker." -ForegroundColor Yellow
                 }
                 Default {
                     Write-Verbose "User input not recognized, assuming 'No'."

@@ -70,7 +70,7 @@ PowerShellVersion = '5.1'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-SpfDkimDmarc', 'Get-SPFRecord', 'Get-DKIMRecord', 
-               'Get-DMARCRecord', 'Get-DNSSEC', 'Invoke-MtaSts', 'Get-BimiRecord'
+               'Get-DMARCRecord', 'Get-DNSSEC', 'Invoke-MtaSts', 'Get-BimiRecord', 'Update-ModuleDomainHealthChecker'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
@@ -79,7 +79,7 @@ CmdletsToExport = '*'
 VariablesToExport = '*'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'Show-SpfDkimDmarc', 'isdd', 'gspf', 'gdkim', 'gdmarc', 'gdnssec', 'gmts','gbimi'
+AliasesToExport = 'isdd', 'isdd', 'gspf', 'gdkim', 'gdmarc', 'gdnssec', 'gmts', 'gbimi'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
@@ -103,13 +103,13 @@ PrivateData = @{
         LicenseUri = 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/'
+        ProjectUri = 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://raw.githubusercontent.com/T13nn3s/Show-SpfDkimDmarc/main/logo/Show-SpfDkimDmarc.png'
+        IconUri = 'https://raw.githubusercontent.com/T13nn3s/Invoke-SpfDkimDmarc/main/logo/Invoke-SpfDkimDmarc.png'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/CHANGELOG'
+        ReleaseNotes = 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/CHANGELOG'
 
         # Prerelease string of this module
         # Prerelease = ''
@@ -125,7 +125,7 @@ PrivateData = @{
  } # End of PrivateData hashtable
 
 # HelpInfo URI of this module
-HelpInfoURI = 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
+HelpInfoURI = 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''

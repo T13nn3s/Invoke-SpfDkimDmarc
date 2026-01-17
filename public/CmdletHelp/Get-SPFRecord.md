@@ -1,14 +1,14 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md
+online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md
 schema: 2.0.0
 ---
 
 # Get-SPFRecord
 
 ## SYNOPSIS
-Function to resolve the SPF-record of a domain.
+Retrieves and evaluates SPF (Sender Policy Framework) records for one or more domains.
 
 ## SYNTAX
 
@@ -17,9 +17,7 @@ Get-SPFRecord [-Name] <String[]> [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-It is important to configure an SPF record on your emaildomain.
-SPF stands for Sender Policy Framework, and it's an authentication protocol to prevent email spoofing.
-This PowerShell function can resolve an SPF record of a emaildomain and give an advisory regarding the current configuration.
+Get-SPFRecord locates a domain's SPF TXT record (v=spf1), follows SPF redirects, counts nested DNS lookups (enforcing the RFC7208 limit), checks record and token lengths, and evaluates the SPF qualifier to produce actionable advisories. The cmdlet returns PSCustomObject(s) with properties: Name, SPFRecord, SPFRecordLength, SPFRecordDnsLookupCount, and SPFAdvisory. Cross-platform: uses Resolve-DnsName on Windows and dig on Linux/macOS; accepts an optional -Server parameter for custom DNS resolution.
 
 ## EXAMPLES
 
@@ -81,12 +79,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.String[]
+
 ## OUTPUTS
 
 ### System.Object
@@ -94,5 +107,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+[Get-SPFRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
 
+[Project site on Github](github.com/T13nn3s/Invoke-SpfDkimDmarc/)

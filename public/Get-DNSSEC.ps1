@@ -1,5 +1,5 @@
 <#>
-.HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DNSSec.md'
+.HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DNSSec.md'
 #>
 
 # Load private functions

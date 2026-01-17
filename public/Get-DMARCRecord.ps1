@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md'
+HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md'
 #>
 
 # Load private functions
@@ -63,7 +63,7 @@ function Get-DMARCRecord {
 
             if ($OsPlatform -eq "Windows") {
                 Write-Verbose "Querying DMARC record for $domain"
-                $DMARC = Resolve-DnsName -Name "_dmarc.$($domain)" -Type TXT @SplatParameters | Select-Object -ExpandProperty strings
+                $DMARC = Resolve-DnsName -Name "_dmarc.$($domain)" -Type TXT @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             }
             elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                 $DMARC = $(dig TXT "_dmarc.$($domain)" +short | Out-String).Trim()

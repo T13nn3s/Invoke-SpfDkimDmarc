@@ -1,14 +1,14 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DMARCRecord.md
+online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DNSSec.md
 schema: 2.0.0
 ---
 
 # Get-DNSSec
 
 ## SYNOPSIS
-Function that checks whether DNSSEC is configured
+Determines whether one or more domains are DNSSEC-signed.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-DNSSec [-Name] <String[]> [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-DNSSEC creates a secure domain name system by adding cryptographic signatures to existing DNS records. These digital signatures are stored in DNS name servers alongside common record types like A, AAAA, MX, CNAME, etc. By checking its associated signature, you can verify that a requested DNS record comes from its authoritative name server and wasn't altered en-route, opposed to a fake record injected in a man-in-the-middle attack.
+Get-DNSSec queries DNSKEY records for the specified domain(s) and evaluates DNSSEC configuration (flags and protocol) per RFC4034. On Windows it uses Resolve-DnsName; on Linux/macOS it uses dig (dnsutils required). Returns PSCustomObject(s) with properties: Name, DNSSEC, and DnsSecAdvisory. Supports an optional -Server parameter to query a specific DNS server.
 
 ## EXAMPLES
 
@@ -60,12 +60,26 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.String[]
 
 ## OUTPUTS
 
@@ -75,4 +89,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## RELATED LINKS
 
 [A Gentle Introduction to DNSSEC](https://www.cloudflare.com/dns/dnssec/how-dnssec-works/)
-[Get-SPFRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+
+[Get-DNSSec is part of the 'DomainHealthChecker' module, available on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+
+[Project site on Github](github.com/T13nn3s/Invoke-SpfDkimDmarc/)

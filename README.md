@@ -9,9 +9,9 @@
 </p>
 
 # Invoke-SpfDkimDmarc
-Invoke-SpfDkimDmarc is a function within the PowerShell module DomainHealthChecker that checks SPF, DKIM, and DMARC records for one or more domains. After installing the module, you can use Invoke-SpfDkimDmarc to check all three records at once. You can also check the records individually by using the cmdlets `Get-SPFRecord`, `Get-DKIMRecord`, `Get-DNSSec`, or `Get-DMARCRecord` to retrieve the record for a single domain.
+Invoke-SpfDkimDmarc is a function within the PowerShell module DomainHealthChecker that checks SPF, DKIM, BIMI, and DMARC records for one or more domains. After installing the module, you can use Invoke-SpfDkimDmarc to check all three records at once. You can also check the records individually by using the cmdlets `Get-SPFRecord`, `Get-DKIMRecord`, `Get-DNSSec`, `Get-BIMIrecord` or `Get-DMARCRecord` to retrieve the record for a single domain.
 
-![Invoke-SpfDkimDmarc](https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/logo/Show-SpfDkimDmarc.png)
+![Invoke-SpfDkimDmarc](https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/logo/Invoke-SpfDkimDmarc.png)
 
 ## System Requirements
 This module requires PowerShell version 5.1 or later on Windows, and PowerShell Core on Linux and macOS.
@@ -48,7 +48,7 @@ After installing this module, you have the following cmdlets at your disposal.
 - `Get-DMARCRecord` to check the DMARC record for a single domain. This cmdlet has also an alias `gdmarc` for quick checks.
 - `Get-DNSSec` to check whether the domain is protected with DNSSEC. This cmdlet has also an alias `gdnssec` for quick checks.
 - `Invoke-MtaSts` to check for the existence of the record and also checks for a valid MTA-STS Policy.
-- `Get-BimiRecord` to check for the existance of the record and also checks if the DMARC policy is configured properly according the needs of BIMI.
+- `Get-BIMIRecord` to check for the existance of the record and also checks if the DMARC policy is configured properly according the needs of BIMI.
 
 ## Split DNS environment
 If you are using a split DNS environment, you can use the `-Server` parameter to specify an alternative DNS server.
@@ -64,125 +64,126 @@ SpfRecord               : v=spf1 -all
 SpfAdvisory             : An SPF-record is configured and the policy is sufficiently strict.
 SPFRecordLength         : 11
 SPFRecordDnsLookupCount : 0/10 (OK)
-DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac
-                          3n92qqi@ruf.powerdmarc.com; pct=100;
-DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers
-                           and spammers.
+DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
 DkimRecord              :
-DkimSelector            : zendesk2
+DkimSelector            : yandex
 DkimAdvisory            : We couldn't find a DKIM record associated with your domain.
-MtaRecord               :
+MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
+DnsSec                  : Domain is DNSSEC signed.
+DnsSecAdvisory          : Great! DNSSEC is enabled on your domain.
 ```
 
 Checks the SPF, DMARC, DKIM and Mta configuration for the domain binsec.nl.
 
 ### Example 2
 ```powershell
-PS C:\> Invoke-spfDkimDmarc binsec.nl, microsoft.nl -IncludeDNSSEC
+PS C:\> Invoke-spfDkimDmarc binsec.nl, microsoft.nl
 
 Name                    : binsec.nl
 SpfRecord               : v=spf1 -all
 SpfAdvisory             : An SPF-record is configured and the policy is sufficiently strict.
 SPFRecordLength         : 11
 SPFRecordDnsLookupCount : 0/10 (OK)
-DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac
-                          3n92qqi@ruf.powerdmarc.com; pct=100;
-DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers
-                           and spammers.
+DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
 DkimRecord              :
-DkimSelector            : zendesk2
+DkimSelector            : yandex
 DkimAdvisory            : We couldn't find a DKIM record associated with your domain.
-MtaRecord               :
+MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
 DnsSec                  : Domain is DNSSEC signed.
 DnsSecAdvisory          : Great! DNSSEC is enabled on your domain.
 
 Name                    : microsoft.nl
 SpfRecord               : v=spf1 mx -all v=spf1 +a +mx include:sendgrid.net -all
-SpfAdvisory             : Domain has more than one SPF record. Only one SPF record per domain is allowed. This is expli
-                          citly defined in RFC4408.
+SpfAdvisory             : Domain has more than one SPF record. Only one SPF record per domain is allowed. This is explicitly defined in RFC4408.
 SPFRecordLength         : 53
 SPFRecordDnsLookupCount : 3/10 (OK)
 DmarcRecord             :
-DmarcAdvisory           : Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers
-                          .
+DmarcAdvisory           : Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers.
 DkimRecord              :
-DkimSelector            : zendesk2
+DkimSelector            : yandex
 DkimAdvisory            : We couldn't find a DKIM record associated with your domain.
-MtaRecord               :
+MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory            : No BIMI record found for domain.BIMI record found. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
 DnsSec                  : No DNSKEY records found.
 DnsSecAdvisory          : Enable DNSSEC on your domain. DNSSEC decreases the vulnerability to DNS attacks.
 ```
 
-Checks the SPF, DMARC, DKIM, Mta and DNSSEC configuration for the domains binsec.nl and microsoft.com.
+Checks the SPF, DMARC, DKIM, Mta and DNSSEC configuration for the domains binsec.nl and microsoft.nl.
 
 ### Example 3
 ```powershell
-PS C:\> Invoke-spfDkimDmarc binsec.nl, ing.nl -dkimselector selector1 -IncludeDNSSEC -server 1.1.1.1
+PS C:\> Invoke-spfDkimDmarc binsec.nl, ing.nl -dkimselector selector1 -server 1.1.1.1
 
 Name                    : binsec.nl
 SpfRecord               : v=spf1 -all
 SpfAdvisory             : An SPF-record is configured and the policy is sufficiently strict.
 SPFRecordLength         : 11
 SPFRecordDnsLookupCount : 0/10 (OK)
-DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac
-                          3n92qqi@ruf.powerdmarc.com; pct=100;
-DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers
-                           and spammers.
+DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
 DkimRecord              :
 DkimSelector            : selector1
 DkimAdvisory            : No DKIM-record found for selector selector1._domainkey.binsec.nl
 MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
 DnsSec                  : Domain is DNSSEC signed.
 DnsSecAdvisory          : Great! DNSSEC is enabled on your domain.
 
 Name                    : ing.nl
-SpfRecord               : v=spf1 ip4:80.248.34.0/24 ip4:195.248.87.0/24 ip4:85.112.22.247 ip4:74.63.141.251 ip4:83.149.
-                          86.160/27 ip4:83.149.121.128/26 ip4:80.79.192.34/31 ip4:78.31.119.9 ip4:91.220.136.168 ip4:46
-                          .31.52.0/23 ip4:46.19.168.0/23 ip4:192.254.112.185 ip4:91.209.197.6 ip4:91.209.197.7 ip4:62.1
-                          12.237.21 ip4:62.112.237.23 ip6:2a00:1558:2801:4::2:1 ip6:2a00:1558:2801:4::3:1 include:_spf.
-                          ing.net include:_spf.ing.nl -all
-SpfAdvisory             : Your SPF record has more than 255 characters in one string. This MUST not be done as explicit
-                          ly defined in RFC4408. An SPF-record is configured and the policy is sufficiently strict.
+SpfRecord               : v=spf1 ip4:80.248.34.0/24 ip4:195.248.87.0/24 ip4:85.112.22.247 ip4:74.63.141.251 ip4:83.149.86.160/27 ip4:83.149.121.128/26 ip4:80.79.192.34/31 ip4:78.31.119.9
+                           ip4:91.220.136.168 ip4:46.31.52.0/23 ip4:46.19.168.0/23 ip4:192.254.112.185 ip4:91.209.197.6 ip4:91.209.197.7 ip4:62.112.237.21 ip4:62.112.237.23 ip6:2a00:1558
+                          :2801:4::2:1 ip6:2a00:1558:2801:4::3:1 include:_spf.ing.net include:_spf.ing.nl -all
+SpfAdvisory             : Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408. An SPF-record is configured and the policy i
+                          s sufficiently strict.
 SPFRecordLength         : 404
 SPFRecordDnsLookupCount : 4/10 (OK)
-DmarcRecord             : v=DMARC1;p=reject;rua=mailto:Global.Mail.DMARC@ing.com,mailto:ejdvezzq@ag.dmarcian-eu.com,mai
-                          lto:dmarc.feedback@ing.nl
-DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers
-                           and spammers.
-DkimRecord              : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyxRaOKkzswKa19QEg3fjhhg0Uhtq+stkjkdx
-                          1X7MelAGcB71tmxcJKH4iBlnltMLnyrWtfKrChTsrbF7cCpdtMaXjmYVG9zvSx74HUBb223TqMve8K1qBU/sW2I3ZijuP
-                          /37HacBcCmwXSQhe8+kkuGJ1Nq9eojmrdqxjB4QuTQIDAQAB;
+DmarcRecord             : v=DMARC1;p=reject;rua=mailto:Global.Mail.DMARC@ing.com,mailto:ejdvezzq@ag.dmarcian-eu.com,mailto:dmarc.feedback@ing.nl
+DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
+DkimRecord              : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyxRaOKkzswKa19QEg3fjhhg0Uhtq+stkjkdx1X7MelAGcB71tmxcJKH4iBlnltMLnyrWtfKrChTsrbF7cCpdtMaXjmYVG9zvSx74HUB
+                          b223TqMve8K1qBU/sW2I3ZijuP/37HacBcCmwXSQhe8+kkuGJ1Nq9eojmrdqxjB4QuTQIDAQAB;
 DkimSelector            : selector1
 DkimAdvisory            : DKIM-record found.
 MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : v=spf1 -all
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
 DnsSec                  : Domain is DNSSEC signed.
 DnsSecAdvisory          : Great! DNSSEC is enabled on your domain.
 ```
 
-Checks the SPF, DMARC, DKIM for dkimselector selector2, Mta and DNSSEC configuration for the domains binsec.nl and microsoft.com using 1.1.1.1 as the DNS Server for the lookup.
+Checks the SPF, DMARC, DKIM for dkimselector selector2, Mta and DNSSEC configuration for the domains binsec.nl and ing.nl using 1.1.1.1 as the DNS Server for the lookup.
 
 ### Example 3
 ```powershell
-Invoke-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domains.txt
+Invoke-SpfDkimDmarc -File $env:USERPROFILE\Desktop\domains.txt -Server 1.1.1.1
 
 Name                    : binsec.nl
 SpfRecord               : v=spf1 -all
 SpfAdvisory             : An SPF-record is configured and the policy is sufficiently strict.
 SPFRecordLength         : 11
 SPFRecordDnsLookupCount : 0/10 (OK)
-DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac
-                          3n92qqi@ruf.powerdmarc.com; pct=100;
-DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers
-                           and spammers.
+DmarcRecord             : v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:rac3n92qqi@rua.powerdmarc.com; ruf=mailto:rac3n92qqi@ruf.powerdmarc.com; pct=100;
+DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
 DkimRecord              :
 DkimSelector            : yandex
 MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
+DnsSec                  : Domain is DNSSEC signed.
+DnsSecAdvisory          : Great! DNSSEC is enabled on your domain.
 
 Name                    : itsecuritymatters.nl
 SpfRecord               : v=spf1 include:_spf.protonmail.ch ~all
@@ -191,24 +192,44 @@ SPFRecordLength         : 38
 SPFRecordDnsLookupCount : 1/10 (OK)
 DmarcRecord             : v=DMARC1; p=reject; pct=100;
 DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
-DkimRecord              : v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9MKqr+i7WAJnICEl4XNrMd0yThw0vszkgJRim0i5U8+KnDW9GvhVZ4qXDTAcKRQFqGBTgoOk4QJpAnUCQEOVVkpMrhDl24isMnShqfCVdTvVZv/a627KD6gKMU8+8tNH3TpBWSJaa7C96mxSj5eNuEg3gdCSq6wXOypnwtW2GMr+UgRsonsDYDGpUENxl0MYib/ yy5Pz6qm31foiKeQLV8gLk7MAhoXek085EVT8CGFnDY/j3ODAEyLXfs8lUaqIZCgCaTrCABbB5aX4fiWr8blahEbvNNC8RL
-                          01ne4dAhaotEonVYgHrVAOA3+u1d/m+nG9q9vQ5kD411S4s/Wv8wIDAQAB;
+DkimRecord              : v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9MKqr+i7WAJnICEl4XNrMd0yThw0vszkgJRim0i5U8+KnDW9GvhVZ4qXDTAcKRQFqGBTgoOk4QJpAnUCQEOVVkpMrhDl24isMnSh
+                          qfCVdTvVZv/a627KD6gKMU8+8tNH3TpBWSJaa7C96mxSj5eNuEg3gdCSq6wXOypnwtW2GMr+UgRsonsDYDGpUENxl0MYib/ yy5Pz6qm31foiKeQLV8gLk7MAhoXek085EVT8CGFnDY/j3ODAEyLXfs8lUaqIZCg
+                          CaTrCABbB5aX4fiWr8blahEbvNNC8RL01ne4dAhaotEonVYgHrVAOA3+u1d/m+nG9q9vQ5kD411S4s/Wv8wIDAQAB;
 DkimSelector            : protonmail
 MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : We couldn't find a BIMI record associated with your domain.
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
+DnsSec                  : No DNSKEY records found.
+DnsSecAdvisory          : Enable DNSSEC on your domain. DNSSEC decreases the vulnerability to DNS attacks.
 
 Name                    : ing.nl
-SpfRecord               : v=spf1 ip4:80.248.34.0/24 ip4:195.248.87.0/24 ip4:85.112.22.247 ip4:74.63.141.251 ip4:83.149.86.160/27 ip4:83.149.121.128/26 ip4:80.79.192.34/31 ip4:78.31.119.9 ip4:91.220.136.168 ip4:46.31.52.0/23 ip4:46.19.168.0/23 ip4:192.254.112.185 ip4:91.209.197.6 ip4:91.209.197.7 ip4:62.112.237.21 ip4:62.112.237.23 ip6:2a00:1558:2801:4::2:1 ip6:2a00:1558:2801
-                          :4::3:1 include:_spf.ing.net include:_spf.ing.nl -all
-SpfAdvisory             : Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408. An SPF-record is configured and the policy is sufficiently strict.
+SpfRecord               : v=spf1 ip4:80.248.34.0/24 ip4:195.248.87.0/24 ip4:85.112.22.247 ip4:74.63.141.251 ip4:83.149.86.160/27 ip4:83.149.121.128/26 ip4:80.79.192.34/31 ip4:78.31.119.9
+                           ip4:91.220.136.168 ip4:46.31.52.0/23 ip4:46.19.168.0/23 ip4:192.254.112.185 ip4:91.209.197.6 ip4:91.209.197.7 ip4:62.112.237.21 ip4:62.112.237.23 ip6:2a00:1558
+                          :2801:4::2:1 ip6:2a00:1558:2801:4::3:1 include:_spf.ing.net include:_spf.ing.nl -all
+SpfAdvisory             : Your SPF record has more than 255 characters in one string. This MUST not be done as explicitly defined in RFC4408. An SPF-record is configured and the policy i
+                          s sufficiently strict.
 SPFRecordLength         : 404
 SPFRecordDnsLookupCount : 4/10 (OK)
 DmarcRecord             : v=DMARC1;p=reject;rua=mailto:Global.Mail.DMARC@ing.com,mailto:ejdvezzq@ag.dmarcian-eu.com,mailto:dmarc.feedback@ing.nl
 DmarcAdvisory           : Domain has a DMARC record and your DMARC policy will prevent abuse of your domain by phishers and spammers.
-DkimRecord              : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyxRaOKkzswKa19QEg3fjhhg0Uhtq+stkjkdx1X7MelAGcB71tmxcJKH4iBlnltMLnyrWtfKrChTsrbF7cCpdtMaXjmYVG9zvSx74HUBb223TqMve8K1qBU/sW2I3ZijuP/37HacBcCmwXSQhe8+kkuGJ1Nq9eojmrdqxjB4QuTQIDAQAB;
+DkimRecord              : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyxRaOKkzswKa19QEg3fjhhg0Uhtq+stkjkdx1X7MelAGcB71tmxcJKH4iBlnltMLnyrWtfKrChTsrbF7cCpdtMaXjmYVG9zvSx74HUB
+                          b223TqMve8K1qBU/sW2I3ZijuP/37HacBcCmwXSQhe8+kkuGJ1Nq9eojmrdqxjB4QuTQIDAQAB;
 DkimSelector            : selector1
 MtaRecord               : No MTA-STS DNS record found.
 MtaAdvisory             : The MTA-STS DNS record doesn't exist.
+BimiRecord              : v=spf1 -all
+BimiAdvisory            : DMARC policy is set to p=reject, which is the best policy for BIMI to function. No 'a=' (VMC) tag found, it's recommended to include a VMC certificate.
+DnsSec                  : Domain is DNSSEC signed.
+DnsSecAdvisory          : Great! DNSSEC is enabled on your domain.
 ```
 
-Checks the SPF, DMARC, DKIM for dkimselector zendesk1, Mta and DNSSEC configuration for the domains binsec.nl, itsecuritymatters.nl, microsoft.com using `1.1.1.1` as the DNS Server for the lookup. The domains are listed in the file `domains.txt`.
+Get's the contents of the file `domains.txt`, and itterates through the domains to perform all the checks against the domains by using the `1.1.1.1` as the DNS Server for the lookup. The domains are listed in the file `domains.txt`.
+
+Contents of the file `domains.txt`:
+
+```
+binsec.nl
+itsecuritymatters.nl
+ing.nl
+```

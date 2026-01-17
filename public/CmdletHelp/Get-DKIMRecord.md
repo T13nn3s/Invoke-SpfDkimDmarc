@@ -1,14 +1,14 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md
+online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md
 schema: 2.0.0
 ---
 
 # Get-DKIMRecord
 
 ## SYNOPSIS
-Function to resolve a DKIM record of a domain.
+Retrieves and validates DKIM records for one or more domains.
 
 ## SYNTAX
 
@@ -17,10 +17,7 @@ Get-DKIMRecord [-Name] <String[]> [[-DkimSelector] <String>] [[-Server] <String>
 ```
 
 ## DESCRIPTION
-It is important to configure DKIM on an emaildomain and sending emailserver.
-DKIM stands for DomainKeys Identified Mail, and it's an verification protocol for verifying the legitimacy of the sender, to prevent email spoofing.
-This PowerShell function can resolve an DKIM record of an emaildomain and give an advisory regarding the current configuration.
-It's possible use a custom DKIM-selector.
+Get-DKIMRecord queries DKIM records using a provided selector or a list of common selectors, follows CNAME chains to locate records, and reports findings and advisories per domain. It supports Windows (Resolve-DnsName) and Linux/macOS (dig), accepts an optional DNS server, and returns objects with Name, DkimRecord, DkimSelector, and DKIMAdvisory properties.
 
 ## EXAMPLES
 
@@ -98,6 +95,20 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -111,5 +122,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[Get-DKIMRecord is part of the 'DomainHealthChecker' module on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+[Get-DKIMRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
 
+[Project site on Github](github.com/T13nn3s/Invoke-SpfDkimDmarc/)

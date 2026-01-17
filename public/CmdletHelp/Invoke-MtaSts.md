@@ -1,14 +1,14 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md
+online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-MtaSts.md
 schema: 2.0.0
 ---
 
 # Invoke-MtaSts
 
 ## SYNOPSIS
-Function to check for MTA-STS DNS TXT Record and Valid MTA-STS Policy
+Validates a domain's MTA-STS DNS record and policy file and reports MX TLS support.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Invoke-MtaSts [-Name] <String[]> [[-Server] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-MTA-STS (Mail Transfer Agent Strict Transport Security) is a security mechanism designed to enforce the use of encrypted (TLS) connections for email in transit, helping to prevent man-in-the-middle attacks on email communication. It enables domain owners to specify that emails sent to their domain should only be accepted over secure TLS connections and to define a policy for handling messages if secure transmission fails.
+Invoke-MtaSts checks the _mta-sts TXT DNS record and downloads the MTA-STS policy file from https://mta-sts.<domain>/.well-known/mta-sts.txt. It validates record format (version and id), evaluates the policy file (version, mode, max_age, and listed mx entries), compares policy MX entries to actual MX DNS records, and tests whether MX hosts support STARTTLS. Returns PSCustomObject(s) with Name, mtaRecord, and mtaAdvisory properties. Cross-platform: uses Resolve-DnsName on Windows and dig on Linux/macOS; accepts an optional -Server parameter for custom DNS resolution.
 
 ## EXAMPLES
 
@@ -87,6 +87,20 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -100,3 +114,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+
+[Get-MtaSts is part of the 'DomainHealthChecker' module, available on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
+
+[Project site on Github](github.com/T13nn3s/Invoke-SpfDkimDmarc/)

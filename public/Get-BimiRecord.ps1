@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-BIMI.md'
+HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-BIMIRecord.md'
 #>
 
 # Load private functions
@@ -14,7 +14,7 @@ if (Test-Path -Path $PublicFolder) {
     Get-ChildItem -Path $PublicFolder -Filter "*.ps1" -File | ForEach-Object { . $_.FullName }
 }
 
-function Get-BimiRecord {
+function Get-BIMIRecord {
     [CmdletBinding()]
     param (
         [Parameter(
@@ -74,7 +74,7 @@ function Get-BimiRecord {
                 Write-Verbose "Using BIMI selector: $($Selector)"
 
                 if ($OsPlatform -eq "Windows") {
-                    $bimiRecord = Resolve-DnsName -Type TXT -Name "$($Selector)._bimi.$($domain)" | Select-Object -ExpandProperty strings @SplatParameters
+                    $bimiRecord = Resolve-DnsName -Type TXT -Name "$($Selector)._bimi.$($domain)" @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                     $bimiRecord = $(dig TXT "$($Selector)._bimi.$($domain)" +short | Out-String).Trim()
@@ -87,7 +87,7 @@ function Get-BimiRecord {
                 Write-Verbose "Using default BIMI selector."
 
                 if ($OsPlatform -eq "Windows") {
-                    $bimiRecord = Resolve-DnsName -Type TXT -Name "default._bimi.$($domain)" | Select-Object -ExpandProperty strings @SplatParameters
+                    $bimiRecord = Resolve-DnsName -Type TXT -Name "default._bimi.$($domain)" @SplatParameters | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                     $bimiRecord = $(dig TXT "default._bimi.$($domain)" +short | Out-String).Trim()
@@ -153,17 +153,17 @@ function Get-BimiRecord {
             
                 if ($bimiRecord -match "a=") {
                     Write-Verbose "Validating 'a=' (VMC) tag in BIMI record."
-                    $VMX = $bimiRecord.Split("a=")[1].Split(";")[0].Trim()
+                    $VMC = $bimiRecord.Split("a=")[1].Split(";")[0].Trim()
 
                     # Check if the 'a=' tag contains a valid HTTPS URL
-                    if ($VMX -match "^https://") {
+                    if ($VMC -match "^https://") {
                         Write-Verbose "'a=' (VMC) tag contains a valid HTTPS URL."
                         $BimiAdvisory += " 'a=' (VMC) tag contains a valid HTTPS URL."
                         Write-Verbose "Validate date of VMC certificate is not expired."
                         
                         # Download the VMC certificate
                         # Split multiple certificates if present in the certificate chain
-                        $VmcCertificate = (Invoke-WebRequest -Uri $VMX -UseBasicParsing).Content
+                        $VmcCertificate = (Invoke-WebRequest -Uri $VMC -UseBasicParsing).Content
                         $certificates = $VmcCertificate -split '(?=-----BEGIN CERTIFICATE-----)' | Where-Object { $_ -match 'BEGIN CERTIFICATE' }
 
                         foreach ($pem in $certificates) {
@@ -173,7 +173,8 @@ function Get-BimiRecord {
                             $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($certBytes)
 
                             # Output the expiration date of the certificate (skip CA)
-                            $cert | Where-Object { $cert.Subject -notmatch "CA" } | ForEach-Object {                            
+                            $cert | Where-Object { $cert.Subject -notmatch "CA" } | ForEach-Object {    
+                           
                                 if ($cert.NotAfter -lt (Get-Date)) {
                                     Write-Verbose "VMC certificate is expired, expiration date: $($cert.NotAfter)"
                                     $BimiAdvisory += " VMC certificate is expired, expiration date: $($cert.NotAfter). Please renew the certificate."
@@ -182,12 +183,13 @@ function Get-BimiRecord {
                                     Write-Verbose "VMC certificate is valid, expiration date: $($cert.NotAfter)."
                                     $BimiAdvisory += " VMC certificate is valid, expiration date: $($cert.NotAfter)."
                                 }
+                                break
                             }
                         }
                     }
                     else {
                         Write-Verbose "'a=' (VMC) tag does not contain a valid HTTPS URL."
-                        $BimiAdvisory += " 'a=' (VMC) tag does not contain a valid HTTPS URL, it should start with 'https://'."
+                        $BimiAdvisory += " 'a=' (VMC) tag does not contain a valid HTTPS URL, it should start with 'https://'. It's recommended to use a valid HTTPS URL for VMC to prevent that scammers misuse your logo."
                     }
                 }
                 else {
