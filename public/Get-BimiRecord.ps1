@@ -159,32 +159,41 @@ function Get-BIMIRecord {
                     if ($VMC -match "^https://") {
                         Write-Verbose "'a=' (VMC) tag contains a valid HTTPS URL."
                         $BimiAdvisory += " 'a=' (VMC) tag contains a valid HTTPS URL."
-                        Write-Verbose "Validate date of VMC certificate is not expired."
+                        Write-Verbose "Validate date of VMC certificate"
                         
                         # Download the VMC certificate
                         # Split multiple certificates if present in the certificate chain
-                        $VmcCertificate = (Invoke-WebRequest -Uri $VMC -UseBasicParsing).Content
-                        $certificates = $VmcCertificate -split '(?=-----BEGIN CERTIFICATE-----)' | Where-Object { $_ -match 'BEGIN CERTIFICATE' }
+                        try {
+                            Write-Verbose "Downloading VMC certificate from URL: $VMC"
+                            $VmcCertificate = (Invoke-WebRequest -Uri $VMC -UseBasicParsing).Content
+                            $certificates = $VmcCertificate -split '(?=-----BEGIN CERTIFICATE-----)' | Where-Object { $_ -match 'BEGIN CERTIFICATE' }
+                        }
+                        catch {
+                            Write-Verbose "Failed to download VMC certificate from URL: $VMC"
+                            $BimiAdvisory += " Failed to download VMC certificate from URL: $VMC. Please ensure the URL is correct and accessible."
+                            continue
+                        }
 
                         foreach ($pem in $certificates) {
-                            $base64 = $pem -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\s', ''
+                            Write-Verbose "Processing VMC certificate."
+                            $base64 = $pem -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\\s', ''
 
                             $certBytes = [System.Convert]::FromBase64String($base64)
                             $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($certBytes)
+                            Write-Verbose "Loaded certificate: $($cert.Subject)"
 
                             # Output the expiration date of the certificate (skip CA)
-                            $cert | Where-Object { $cert.Subject -notmatch "CA" } | ForEach-Object {    
-                           
-                                if ($cert.NotAfter -lt (Get-Date)) {
-                                    Write-Verbose "VMC certificate is expired, expiration date: $($cert.NotAfter)"
-                                    $BimiAdvisory += " VMC certificate is expired, expiration date: $($cert.NotAfter). Please renew the certificate."
-                                }
-                                else {
-                                    Write-Verbose "VMC certificate is valid, expiration date: $($cert.NotAfter)."
-                                    $BimiAdvisory += " VMC certificate is valid, expiration date: $($cert.NotAfter)."
-                                }
-                                break
+                            $expiration = [datetime]$cert.NotAfter
+                            if ($expiration -lt (Get-Date)) {
+                                Write-Verbose "VMC certificate is expired, expiration date: $($expiration)"
+                                $BimiAdvisory += " VMC certificate is expired, expiration date: $($expiration). Please renew the certificate."
                             }
+                            else {
+                                Write-Verbose "VMC certificate is valid, expiration date: $($expiration)."
+                                $BimiAdvisory += " VMC certificate is valid, expiration date: $($expiration)."
+                            }
+
+                            break # only evaluate the first certificate in the chain
                         }
                     }
                     else {
