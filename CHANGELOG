@@ -6,7 +6,7 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
-[2.1] - 23-1-2026
+[2.1] - 28-1-2026
 
 - Added `-SkipUpdateCheck` on calling the module, to skip the update check against the PowerShellgallery
 - Added `Get-BIMIRecord` check, this function resolves and validates BIMI (Brand Indicators for Message Identification) records for one or more domains.
