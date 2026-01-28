@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md'
+HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DKIMRecord.md'
 #>
 
 # Load private functions
@@ -15,8 +15,8 @@ function Get-DKIMRecord {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specifies the domain for resolving the DKIM-record."
-        )][string[]]$Name,
+            HelpMessage = "Specifies the domain for resolving the DKIM-record.")]
+        [string[]]$Name,
 
         [Parameter(Mandatory = $False,
             HelpMessage = "Specify a custom DKIM selector.")]
@@ -28,6 +28,9 @@ function Get-DKIMRecord {
     )
 
     begin {
+
+        Write-Verbose "Starting $($MyInvocation.MyCommand)"
+        $PSBoundParameters | Out-String | Write-Verbose
 
         # Determine OS platform
         try {
@@ -43,9 +46,6 @@ function Get-DKIMRecord {
         if ($OsPlatform -eq "Linux" -or $OsPlatform -eq "macOS") {
             Test-DnsUtilsInstalled
         }
-
-        Write-Verbose "Starting $($MyInvocation.MyCommand)"
-        $PSBoundParameters | Out-String | Write-Verbose
         
         if ($PSBoundParameters.ContainsKey('Server')) {
             $SplatParameters = @{

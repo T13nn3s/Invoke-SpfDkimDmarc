@@ -1,5 +1,5 @@
 <#>
-.HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md'
+.HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-SPFRecord.md'
 #>
 
 # Load private functions
@@ -15,8 +15,8 @@ function Get-SPFRecord {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Enter one or more domain names to resolve their SPF records."
-        )][string[]]$Name,
+            HelpMessage = "Enter one or more domain names to resolve their SPF records.")]
+        [string[]]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]

@@ -1,5 +1,5 @@
 <#>
-.HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DNSSec.md'
+.HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-DNSSec.md'
 #>
 
 # Load private functions
@@ -15,8 +15,8 @@ function Get-DNSSec {
             Mandatory = $True,
             ValueFromPipeline = $True,
             ValueFromPipelineByPropertyName = $True,
-            HelpMessage = "Specifies the domain name for testing for DNSSEC existance."
-        )][string[]]$Name,
+            HelpMessage = "Specifies the domain name for testing for DNSSEC existance.")]
+        [string[]]$Name,
 
         [Parameter(Mandatory = $false,
             HelpMessage = "DNS Server to use.")]

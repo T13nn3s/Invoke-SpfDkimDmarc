@@ -6,13 +6,26 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+[2.1] - 28-1-2026
+
+### Added
+- Added `-SkipUpdateCheck` on calling the module, to skip the update check against the PowerShellgallery
+- Added `Get-BIMIRecord` check, this function resolves and validates BIMI (Brand Indicators for Message Identification) records for one or more domains.
+
+### Changed
+- Renamed `Update-ModuleVersion` to `Update-DomainHealthChecker` to better reflect the true mean of this function.
+- Updated README/help docs
+
+### Removed
+- Removed the `-IncludeDNSSEC` parameter, DNSSEC is now default queried
+
 [2.0] - 7-1-2026
 
 ### Added
 - Added cross-platform support for macOS and Linux with PowerShell Core. (#39)
 - Added `Get-OsPlatform.ps1` for OS determining.
 - Added `Test-DnsUtilsInstalled.ps1` for checking if DNS utilities for `dig` is installed.
-- Added `Update-ModuleVersion.ps1` for automatic module version updating.
+- Added `Update-ModuleDomainHealthChecker.ps1` for automatic module version updating.
 
 ### Changed
 - Updated README/help docs
@@ -29,21 +42,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Error when no SPFrecords are present (#48)
 
 [1.7] - 9-11-2024
-### Added:
+### Added
 - New function `Get-MTASTS`. (#41)
 - Added support for multiple values for the `-Name` parameter. (#43)
 
-### Updated:
+### Updated
 - Default DKIM-selectors.
 
-### Fixed:
+### Fixed
 - DkimSelector not working for Invoke-SpfDkimDmarc (#37).
 - Typo in SPF Length (#38 #42).
 - SPF check not correct (#44).
 - SPF Length (#45).
 - DkimSelector not working for Invoke-SpfDkimDmarc (#37).
 
-### Changed:
+### Changed
 - Updated the Readme/help docs (#40)
 
 ## New Contributors
@@ -59,7 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Get-SPFRecord.ps1 bug - SPF record that over 255 characters bug in #31
 - Invoke-SpfDkimDmarc not using -server property bug in #32 
 
-## New Contributors
+### New Contributors
 - @mortenmw made their first contribution in https://github.com/T13nn3s/Invoke-SpfDkimDmarc/pull/30
 
 [1.5.2] - 30-2-2022
@@ -80,20 +93,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Added new exported function Get-SPFRecord.
 - Added new exported function Get-DKIMRecord.
 - Added new exported function Get-DMARCRecord.
-- Added alias `Show-SpfDkimDmarc` for `Invoke-SpfDkimDmarc`.
+- Added alias `Invoke-SpfDkimDmarc` for `Invoke-SpfDkimDmarc`.
 - Added alias `gspf` for `Get-SPFRecord`. 
 - Added alias `gdkim` for `Get-DKIMRecord`.
 - Added alias `gdmarc` for `Get-DMARCRecord`.
 
 ### Changed
-- Removed cmdlet `Show-SpfDkimDmarc`. Use `Invoke-SpfDkimDmarc`
 - Each function has his own PowerShell script file.
+
+### Removed
+- Removed cmdlet `Show-SpfDkimDmarc`. Use `Invoke-SpfDkimDmarc`
 
 [1.4.2] - 2021-07-13
 ### Added
 - More commonly used DKIM-selectors to the default DKIM check.
 
-### Changed
+### Removed
 - Removed hardcoded DNS. You need to specify it manually.
 
 [1.4.1] - 2021-07-07
@@ -108,7 +123,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Changed
 - Multiple if/elseif statements replaced with switches.
-- Turn Script into a Module with proper verb/noun Show-SpfDkimDmarc.
+- Turn Script into a Module with proper verb/noun Invoke-SpfDkimDmarc.
 
 ### Fixed
 - Not working if/elseif statement in SPF.

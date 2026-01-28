@@ -1,5 +1,5 @@
 <#>
-HelpInfoURI 'https://github.com/T13nn3s/Show-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
+HelpInfoURI 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Invoke-SpfDkimDmarc.md'
 #>
 
 # Load public functions
@@ -44,21 +44,23 @@ function Invoke-SpfDkimDmarc {
             Position = 4)]
         [string]$Server,
 
-        [Parameter(Mandatory = $False,
-            HelpMessage = "Include this switch to check for DNSSEC existance",
+        [Parameter(Mandatory = $false,
+            HelpMessage = "Skip the update check on module.",
             Position = 5)]
-        [switch]$IncludeDNSSEC
+        [switch]$SkipUpdateCheck
     )
 
     begin {
 
         # Check if there is an update available
-        try{
-            Update-ModuleVersion -Verbose:$False
+        if (!$SkipUpdateCheck) {
+        try {
+            Update-ModuleDomainHealthChecker -Verbose:$False
         }
         catch {
             Write-Verbose "No update check could be performed: $_"
         }
+    }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
@@ -70,37 +72,24 @@ function Invoke-SpfDkimDmarc {
         $DKIMSplat = @{}
 
         switch -Regex ($True) { 
-            { $Server -and !$DkimSelector -and !$IncludeDNSSEC } {
+            { $Server -and !$DkimSelector } {
                 $Splat += @{ 
                     'Server' = $Server
                 } 
             } 
-            { $DkimSelector -and !$Server -and !$IncludeDNSSEC } {
+            { $DkimSelector -and !$Server } {
                 $DKIMSplat += @{
                     'DkimSelector' = $DkimSelector
                 } 
             } 
-            { $DkimSelector -and $Server -and !$IncludeDNSSEC } { 
+            { $DkimSelector -and $Server } { 
                 $DKIMSplat += @{
                     'DkimSelector' = $DkimSelector
                 }
                 $Splat += @{ 
                     'Server' = $Server
                 }
-            } 
-            { $IncludeDNSSEC -and $Server -and !$DkimSelector } {
-                $Splat += @{ 
-                    'Server' = $Server
-                }
-            } 
-            { $IncludeDNSSEC -and $Server -and $DkimSelector } {
-                $DKIMSplat += @{
-                    'DkimSelector' = $DkimSelector
-                }
-                $Splat += @{ 
-                    'Server' = $Server 
-                }
-            } 
+            }
         }
 
         # If 'File' parameter is used
@@ -110,10 +99,8 @@ function Invoke-SpfDkimDmarc {
                 $DKIM = Get-DKIMRecord -Name $Name @Splat @DKIMSplat
                 $DMARC = Get-DMARCRecord -Name $Name @Splat
                 $MTASTS = Invoke-MtaSTS -Name $Name @Splat
-
-                if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
-                    $DNSSEC = Get-DNSSec -Name $Name @Splat
-                }
+                $BIMI = Get-BimiRecord -Name $Name @Splat
+                $DNSSEC = Get-DNSSec -Name $Name @Splat
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -127,12 +114,10 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
-
-                if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
-                    $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
-                    $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
-                }
-
+                $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
+                $InvokeReturnValues | Add-Member NoteProperty "BimiAdvisory" $BIMI.BimiAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
+                $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
@@ -145,10 +130,8 @@ function Invoke-SpfDkimDmarc {
                 $DKIM = Get-DKIMRecord -Name $domain @Splat @DKIMSplat
                 $DMARC = Get-DMARCRecord -Name $domain @Splat
                 $MTASTS = Invoke-MtaSTS -Name $domain @Splat
-            
-                if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
-                    $DNSSEC = Get-DNSSec -Name $domain @Splat
-                }
+                $DNSSEC = Get-DNSSec -Name $domain @Splat
+                $BIMI = Get-BimiRecord -Name $domain @Splat
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -163,11 +146,10 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
-
-                if ($PSBoundParameters.ContainsKey('IncludeDNSSEC')) {
-                    $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
-                    $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
-                } 
+                $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
+                $InvokeReturnValues | Add-Member NoteProperty "BimiAdvisory" $BIMI.BimiAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
+                $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
