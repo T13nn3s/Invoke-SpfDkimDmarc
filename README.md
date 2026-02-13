@@ -13,19 +13,24 @@ Invoke-SpfDkimDmarc is a function within the PowerShell module DomainHealthCheck
 
 ![Invoke-SpfDkimDmarc](https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/logo/Show-SpfDkimDmarc.png)
 
-## System Requirements
+## The PowerShell Podcast
+This PowerShell module, `DomainHealthChecker`, is discussed by Jordan in The PowerShell Podcast episode **"Jordan Returns: A Fun Dive into Life, PowerShell, and Beyond."** This episode was released on 11/25/2024. You can listen to this episode via this website: [https://powershell.org/2024/11/the-powershell-podcast-jordan-returns-a-fun-dive-into-life-powershell-and-beyond/](https://powershell.org/2024/11/the-powershell-podcast-jordan-returns-a-fun-dive-into-life-powershell-and-beyond/) or via your favorite podcast app. Make sure you follow this podcast. Thanks for the shoutout, Jordan!
+
+
+
+# System Requirements
 This module requires PowerShell version 5.1 or later on Windows, and PowerShell Core on Linux and macOS.
 
-## Installation
+# Installation
 
-### PowershellGallery (recommended)
+## PowershellGallery (recommended)
 The module is published on the PowerShellGallery. You can install this module directly from the PowerShellGallery with the following command:
 ```powershell
 Install-Module DomainHealthChecker
 ```
 PowerShellGallery will automatically download and install the latest version of the module. 
 
-### Manual Installation
+## Manual Installation
 Download the module from the 'Releases' tab from Github. Just download and extract the ZIP file, and just import the module by running this command below:
 ```powershell
 Import-Module -Name .\DomainHealthChecker.psm1
