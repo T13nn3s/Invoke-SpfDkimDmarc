@@ -54,13 +54,13 @@ function Invoke-SpfDkimDmarc {
 
         # Check if there is an update available
         if (!$SkipUpdateCheck) {
-        try {
-            Update-ModuleDomainHealthChecker -Verbose:$False
+            try {
+                Update-ModuleDomainHealthChecker -Verbose:$False
+            }
+            catch {
+                Write-Verbose "No update check could be performed: $_"
+            }
         }
-        catch {
-            Write-Verbose "No update check could be performed: $_"
-        }
-    }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
@@ -101,6 +101,7 @@ function Invoke-SpfDkimDmarc {
                 $MTASTS = Invoke-MtaSTS -Name $Name @Splat
                 $BIMI = Get-BimiRecord -Name $Name @Splat
                 $DNSSEC = Get-DNSSec -Name $Name @Splat
+                $TlsRPT = Get-TlsRpt -Name $Name @Splat
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -118,6 +119,8 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "BimiAdvisory" $BIMI.BimiAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptRecord" $TlsRPT.TlsRptRecord
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptAdvisory" $TlsRPT.TlsRptAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
@@ -132,6 +135,7 @@ function Invoke-SpfDkimDmarc {
                 $MTASTS = Invoke-MtaSTS -Name $domain @Splat
                 $DNSSEC = Get-DNSSec -Name $domain @Splat
                 $BIMI = Get-BimiRecord -Name $domain @Splat
+                $TlsRPT = Get-TlsRpt -Name $Name @Splat
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -150,6 +154,8 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "BimiAdvisory" $BIMI.BimiAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptRecord" $TlsRPT.TlsRptRecord
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptAdvisory" $TlsRPT.TlsRptAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
