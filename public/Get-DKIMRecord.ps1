@@ -116,7 +116,10 @@ function Get-DKIMRecord {
 
     Process {
         foreach ($domain in $Name) {
-    
+            $DkimAdvisory = $null
+            $FoundDkimSelectors = @()
+            $FoundDkimRecords = @()
+
             if ($DkimSelector) {
                 Write-Verbose "Using custom DKIM selector: $DkimSelector"
                 Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
@@ -146,6 +149,8 @@ function Get-DKIMRecord {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
                     elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                        $FoundDkimSelectors += $DkimSelector
+                        $FoundDkimRecords += $DKIM
                         $DkimAdvisory = "DKIM-record found."
                     }
                 } 
@@ -157,6 +162,8 @@ function Get-DKIMRecord {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
                     elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                        $FoundDkimSelectors += $DkimSelector
+                        $FoundDkimRecords += $DKIM
                         $DkimAdvisory = "DKIM-record found."
                     }
                 }
@@ -187,8 +194,9 @@ function Get-DKIMRecord {
                             $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                         }
                         elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                            $FoundDkimSelectors += $DkimSelector
+                            $FoundDkimRecords += $DKIM
                             $DkimAdvisory = "DKIM-record found."
-                            break
                         }
                     }
                     else {
@@ -199,18 +207,35 @@ function Get-DKIMRecord {
                             $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                         }
                         elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                            $FoundDkimSelectors += $DkimSelector
+                            $FoundDkimRecords += $DKIM
                             $DkimAdvisory = "DKIM-record found."
-                            break
                         }
                     }
-                 
                 }
             }
+
             $DkimReturnValues = New-Object psobject
             $DkimReturnValues | Add-Member NoteProperty "Name" $domain
-            $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $DKIM
-            $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelector
-            $DkimReturnValues | Add-Member NoteProperty "DKIMAdvisory" $DkimAdvisory
+
+            if ($FoundDkimSelectors.Count -gt 0) {
+                $DkimReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" @($FoundDkimSelectors)
+                for ($i = 0; $i -lt $FoundDkimSelectors.Count; $i++) {
+                    $index = $i + 1
+                    $DkimReturnValues | Add-Member NoteProperty "DkimSelector-$index" $FoundDkimSelectors[$i]
+                    $DkimReturnValues | Add-Member NoteProperty "DkimRecord-$index" $FoundDkimRecords[$i]
+                    $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory-$index" "DKIM-record found for selector $($FoundDkimSelectors[$i])."
+                }
+            }
+            elseif($FoundDkimSelectors.Count -eq 0) {
+                $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $null
+                $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $null
+                $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory" $DkimAdvisory
+            } else {
+                $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelector
+                $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $DkimRecord
+                $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory" $DkimAdvisory
+            }
             $DkimObject.Add($DkimReturnValues)
             $DkimReturnValues
         }

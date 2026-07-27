@@ -103,6 +103,9 @@ function Invoke-SpfDkimDmarc {
                 $DNSSEC = Get-DNSSec -Name $Name @Splat
                 $TlsRPT = Get-TlsRpt -Name $Name @Splat
 
+                $DkimRecordValue = if ($DKIM.DkimRecord -is [System.Array]) { ($DKIM.DkimRecord -join [Environment]::NewLine) } else { $DKIM.DkimRecord }
+                $DkimSelectorValue = if ($DKIM.DkimSelector -is [System.Array]) { ($DKIM.DkimSelector -join ', ') } else { $DKIM.DkimSelector }
+
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
                 $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
@@ -111,8 +114,11 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" $SPF.SPFRecordDnsLookupCount
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
-                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $DkimRecordValue
+                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelectorValue
+                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord-1" $DKIM.'DkimRecord-1'
+                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector-1" $DKIM.'DkimSelector-1'
+                $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory-1" $DKIM.'DkimAdvisory-1'
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
@@ -137,6 +143,9 @@ function Invoke-SpfDkimDmarc {
                 $BIMI = Get-BimiRecord -Name $domain @Splat
                 $TlsRPT = Get-TlsRpt -Name $domain @Splat
 
+                $DkimRecordValue = if ($DKIM.DkimRecord -is [System.Array]) { ($DKIM.DkimRecord -join [Environment]::NewLine) } else { $DKIM.DkimRecord }
+                $DkimSelectorValue = if ($DKIM.DkimSelector -is [System.Array]) { ($DKIM.DkimSelector -join ', ') } else { $DKIM.DkimSelector }
+
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
                 $InvokeReturnValues | Add-Member NoteProperty "SpfRecord" $SPF.SPFRecord
@@ -145,9 +154,27 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" $SPF.SPFRecordDnsLookupCount
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
-                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
-                $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+
+                if ($DKIM.DkimSelectorsDetected -is [System.Array] -and $DKIM.DkimSelectorsDetected.Count -gt 0) {
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" @($DKIM.DkimSelectorsDetected)
+                    for ($i = 0; $i -lt $DKIM.DkimSelectorsDetected.Count; $i++) {
+                        $index = $i + 1
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimSelector-$index" $DKIM.DkimSelectorsDetected[$i]
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimRecord-$index" $DKIM."DkimRecord-$index"
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory-$index" "DKIM-record found for selector $($DKIM.DkimSelectorsDetected[$i])."
+                    }
+                }
+                elseif ($DKIM.DkimSelector -is [string] -and -not [string]::IsNullOrEmpty($DKIM.DkimSelector)) {
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $DKIM.DkimRecord
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+                else {
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
