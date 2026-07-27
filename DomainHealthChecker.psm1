@@ -94,6 +94,7 @@ function Invoke-SpfDkimDmarc {
 
         # If 'File' parameter is used
         if ($PSBoundParameters.ContainsKey('File')) {
+            Write-Progress -Activity "Querying SPF, DKIM, DMARC, MTA-STS, BIMI, DNSSEC and TLS-RPT records" -Status "Processing domains..." -PercentComplete 0
             foreach ($Name in (Get-Content -Path $File)) {
                 $SPF = Get-SPFRecord -Name $Name @Splat
                 $DKIM = Get-DKIMRecord -Name $Name @Splat @DKIMSplat
@@ -114,11 +115,27 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" $SPF.SPFRecordDnsLookupCount
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $DkimRecordValue
-                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelectorValue
-                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord-1" $DKIM.'DkimRecord-1'
-                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector-1" $DKIM.'DkimSelector-1'
-                $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory-1" $DKIM.'DkimAdvisory-1'
+
+                if ($DKIM.DkimSelectorsDetected -is [System.Array] -and $DKIM.DkimSelectorsDetected.Count -gt 0) {
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" @($DKIM.DkimSelectorsDetected)
+                    for ($i = 0; $i -lt $DKIM.DkimSelectorsDetected.Count; $i++) {
+                        $index = $i + 1
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimSelector-$index" $DKIM.DkimSelectorsDetected[$i]
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimRecord-$index" $DKIM."DkimRecord-$index"
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory-$index" "DKIM-record found for selector $($DKIM.DkimSelectorsDetected[$i])."
+                    }
+                }
+                elseif ($DKIM.DkimSelector -is [string] -and -not [string]::IsNullOrEmpty($DKIM.DkimSelector)) {
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $DKIM.DkimRecord
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+                else {
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
@@ -134,6 +151,7 @@ function Invoke-SpfDkimDmarc {
 
         # If 'Name' parameter is used
         if ($PSBoundParameters.ContainsKey('Name')) {
+            Write-Progress -Activity "Querying SPF, DKIM, DMARC, MTA-STS, BIMI, DNSSEC and TLS-RPT records" -Status "Processing domains..." -PercentComplete 0
             foreach ($domain in $Name) {
                 $SPF = Get-SPFRecord -Name $domain @Splat
                 $DKIM = Get-DKIMRecord -Name $domain @Splat @DKIMSplat

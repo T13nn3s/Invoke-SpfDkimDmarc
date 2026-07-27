@@ -63,52 +63,93 @@ function Get-DKIMRecord {
         # See: https://help.sendmarc.com/support/solutions/articles/44001891845-email-provider-commonly-used-dkim-selectors
         # See: https://www.reddit.com/r/DMARC/comments/1bffol7/list_of_most_common_dkim_selectors/
         $DkimSelectors = @(
-            'selector1' # Microsoft
-            'selector2' # Microsoft
-            'google' # Google Workspace
+            'a1' # unknown / generic
+            'amazonses' # Amazon SES
+            'aweber_key_a' # AWeber
+            'aweber_key_b' # AWeber
+            'aweber_key_c' # AWeber
+            'barracuda' # Barracuda
+            'ces' # Cisco Email Security
+            'cm' # Campaign Monitor
+            'clab1' # Contactlab
+            'ctct1' # Constant Contact
+            'ctct2' # Constant Contact
+            'default' # GoDaddy / secureserver.net
+            'dk' # unknown / generic
+            'dkim' # Hetzner
+            'dkim1024' # Unknown / generic
+            'dkim1' # Mailchimp / Mandrill / cPanel / Exim
+            'dkim2' # Mailchimp / Mandrill
+            'e2ma-k1' # Emma
+            'e2ma-k2' # Emma
+            'e2ma-k3' # Emma
+            'ecm1' # Mapp Digital (former BlueHornet)
+            'email' # unknown / generic
             'everlytickey1' # Everlytic
             'everlytickey2' # Everlytic
             'eversrv' # Everlytic OLD selector
+            'fm1' # Fastmail
+            'fm2' # Fastmail
+            'google' # Google Workspace
+            'hs1' # HubSpot
+            'hs2' # HubSpot
             'k1' # Mailchimp / Mandrill
             'k2' # Mailchimp / Mandrill
+            'k3' # Mailchimp / Mandrill
+            'key1' # unknown / generic
+            'key2' # unknown / generic
+            'kl' # Klaviyo
+            'kl1' # Klaviyo
+            'kl2' # Klaviyo
+            'km1' # Klaviyo
+            'km2' # Klaviyo
+            'kt1' # Klaviyo
+            'kt2' # Klaviyo
+            'litesrv' # MailerLite
+            'm101' # MailUp
+            'm102' # MailUp
+            'mandrill' # Mailchimp / Mandrill
+            'mail' # unknown / generic
+            'mailgun' # Mailgun
+            'mailjet' # Mailjet
+            'mailin' # Sendinblue (legacy)
+            'mailpoet1' # MailPoet
+            'mailpoet2' # MailPoet
+            'mimecast' # Mimecast
+            'mte1' # Mailchimp / Mandrill
+            'mte2' # Mailchimp / Mandrill
             'mxvault' # Global Micro
-            'dkim' # Hetzner
+            'nce2048' # Netcore Cloud / Netcore Email
+            'opentext' # OpenText
+            'plesk' # Plesk
+            'pm' # Postmark
+            'pp' # Proofpoint
             'protonmail' # ProtonMail
             'protonmail2' # ProtonMail
             'protonmail3' # ProtonMail
+            'sable' # SableMail
             's1' # Sendgrid / NationBulder
             's2' # Sendgrid / NationBuilder
-            'ctct1' # Constant Contact
-            'ctct2' # Constant Contact
-            'sm' # Blackbaud, eTapestry
+            'selector1' # Microsoft
+            'selector2' # Microsoft
+            'sfdc' # Salesforce
+            'sib' # Sendinblue / Brevo
             'sig1' # iCloud
-            'litesrv' # MailerLite
+            'sm' # Blackbaud, eTapestry
+            'sm1' # Blackbaud, eTapestry
+            'sm2' # Blackbaud, eTapestry
+            'smtp' # smtp.com
+            'smtpcustomer' # smtp.com
+            'smtpkey' # smtp.com
+            'sophos' # Sophos Email
+            'sparkpost' # SparkPost
+            'spop1024' # IBM
+            'resend' # Resend
+            'yandex' # Yandex Mail
             'zendesk1' # Zendesk
             'zendesk2' # Zendesk
-            'amazonses' # Amazon SES
             'zoho' # Zoho Mail / Campaigns
             'zohomail' # Zoho Mail
-            'sfdc' # Salesforce
-            'hs1' # HubSpot
-            'hs2' # HubSpot
-            'pm' # Postmark
-            'sparkpost' # SparkPost
-            'sib' # Sendinblue / Brevo
-            'mailin' # Sendinblue (legacy)
-            'cm' # Campaign Monitor
-            'fm1' # Fastmail
-            'fm2' # Fastmail
-            'pp' # Proofpoint
-            'mimecast' # Mimecast
-            'ces' # Cisco Email Security
-            'mailgun' # Mailgun
-            'opentext' # OpenText
-            'sophos' # Sophos Email
-            'barracuda' # Barracuda
-            'default' # GoDaddy / secureserver.net
-            'dkim1' # cPanel / Exim
-            'plesk' # Plesk
-            'yandex' # Yandex Mail
         )  
 
         $DKimObject = New-Object System.Collections.Generic.List[System.Object]
@@ -170,6 +211,7 @@ function Get-DKIMRecord {
             }
             else {
                 foreach ($DkimSelector in $DkimSelectors) {
+                    Write-Progress -Activity "Querying DKIM records for $domain" -Status "Checking selector: $DkimSelector" -PercentComplete (($DkimSelectors.IndexOf($DkimSelector) / $DkimSelectors.Count) * 100)
                     Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
                     if ($OsPlatform -eq "Windows") {
                         $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
@@ -227,11 +269,12 @@ function Get-DKIMRecord {
                     $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory-$index" "DKIM-record found for selector $($FoundDkimSelectors[$i])."
                 }
             }
-            elseif($FoundDkimSelectors.Count -eq 0) {
+            elseif ($FoundDkimSelectors.Count -eq 0) {
                 $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $null
                 $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $null
                 $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory" $DkimAdvisory
-            } else {
+            }
+            else {
                 $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelector
                 $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $DkimRecord
                 $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory" $DkimAdvisory
