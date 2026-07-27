@@ -78,6 +78,7 @@ function Get-TlsRpt {
             }
 
             if ($null -eq $TlsRptRecord) {
+                $TlsRptRecord = "No TLS-RPT Record found."
                 $TlsRptAdvisory = "No TLS-RPT Record found. Consider configuring a TLS-RPT record for this domain, to receive reports."
             }
             else {
