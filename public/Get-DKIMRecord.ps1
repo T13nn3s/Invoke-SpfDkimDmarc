@@ -167,25 +167,32 @@ function Get-DKIMRecord {
 
                 if ($OsPlatform -eq "Windows") {
                     $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                    Write-Verbose "DKIM TXT record retrieved: $($DKIM | Out-String)"
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                     $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
                     $DKIM = $DKIM -split '" "' -join ""
-                    $DKIM = ($DKIM -split "`n")[1]
+                    Write-Verbose "DKIM TXT record retrieved: $($DKIM | Out-String)"
                 }
                 elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                     $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
                     $DKIM = $DKIM -split '" "' -join ""
-                    $DKIM = ($DKIM -split "`n")[1]
+                    Write-Verbose "DKIM TXT record retrieved: $($DKIM | Out-String)"
                 }
                 
                 if ($DKIM.Type -eq "CNAME") {
                     Write-Verbose "DKIM record is a CNAME, resolving to TXT record"
                     while ($DKIM.Type -eq "CNAME") {
+                        $DKIM = $DKIM | Where-Object { $_.Type -eq "CNAME" } | Select-Object -First 1
                         $DKIMCname = $DKIM.NameHost
-                        $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters 
+                        Write-Verbose "Resolving CNAME to TXT record: $DKIMCname"
+                        $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters
+                        Write-Verbose "DKIM CNAME record retrieved: $($DKIM | Out-String)"
                     }
-                    $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                    $DKIM = $DKIMStrings -join ""
+                    $DKIM = $DKIM -split '" "' -join ""
+
                     if ($null -eq $DKIM) {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
@@ -197,7 +204,8 @@ function Get-DKIMRecord {
                 } 
                 else {
                     if ($OsPlatform -eq "Windows") {
-                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        $DKIM = $DKIMStrings -join ""
                     }
                     if ($null -eq $DKIM) {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
@@ -215,27 +223,31 @@ function Get-DKIMRecord {
                     Write-Verbose "Querying DKIM record for $($DkimSelector)._domainkey.$($domain)"
                     if ($OsPlatform -eq "Windows") {
                         $DKIM = Resolve-DnsName -Type TXT -Name "$($DkimSelector)._domainkey.$($domain)" @SplatParameters
+                        #$DKIM = $DKIM -split '" "' -join ""
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                         $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short | Out-String).Trim()
                         $DKIM = $DKIM -split '" "' -join ""
-                        $DKIM = ($DKIM -split "`n")[1]
                     }
                     elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                         $DKIM = $(dig TXT "$($DkimSelector)._domainkey.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
                         $DKIM = $DKIM -split '" "' -join ""
-                        $DKIM = ($DKIM -split "`n")[1]
                     }
                     if ($DKIM.Type -eq "CNAME") {
+                        Write-Verbose "DKIM record is a CNAME, resolving to TXT record"
                         while ($DKIM.Type -eq "CNAME") {
+                            $DKIM = $DKIM | Where-Object { $_.Type -eq "CNAME" } | Select-Object -First 1
                             $DKIMCname = $DKIM.NameHost
                             $DKIM = Resolve-DnsName -Type TXT -name "$DKIMCname" @SplatParameters 
                         }
-                        $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                        $DKIM = $DKIMStrings -join ""
                         if ($null -eq $DKIM) {
                             $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                         }
                         elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                            Write-Verbose "DKIM record found for selector $($DkimSelector)._domainkey.$($domain)"
+                            Write-Verbose "DKIM record: $($DKIM | Out-String)"
                             $FoundDkimSelectors += $DkimSelector
                             $FoundDkimRecords += $DKIM
                             $DkimAdvisory = "DKIM-record found."
@@ -243,12 +255,15 @@ function Get-DKIMRecord {
                     }
                     else {
                         if ($OsPlatform -eq "Windows") {
-                            $DKIM = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                            $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                            $DKIM = $DKIMStrings -join ""
                         }
                         if ($null -eq $DKIM) {
                             $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                         }
                         elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
+                            Write-Verbose "DKIM record found for selector $($DkimSelector)._domainkey.$($domain)"
+                            Write-Verbose "DKIM record: $($DKIM | Out-String)"
                             $FoundDkimSelectors += $DkimSelector
                             $FoundDkimRecords += $DKIM
                             $DkimAdvisory = "DKIM-record found."
@@ -261,7 +276,8 @@ function Get-DKIMRecord {
             $DkimReturnValues | Add-Member NoteProperty "Name" $domain
 
             if ($FoundDkimSelectors.Count -gt 0) {
-                $DkimReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" @($FoundDkimSelectors)
+                Write-verbose "Found DKIM selectors: $($FoundDkimSelectors -join ', ')"
+                $DkimReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" ($FoundDkimSelectors -join ", ")
                 for ($i = 0; $i -lt $FoundDkimSelectors.Count; $i++) {
                     $index = $i + 1
                     $DkimReturnValues | Add-Member NoteProperty "DkimSelector-$index" $FoundDkimSelectors[$i]
@@ -270,6 +286,7 @@ function Get-DKIMRecord {
                 }
             }
             elseif ($FoundDkimSelectors.Count -eq 0) {
+                Write-Verbose "No DKIM-record found for $dkimSelector._domainkey.$domain"
                 $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $null
                 $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $null
                 $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory" $DkimAdvisory
