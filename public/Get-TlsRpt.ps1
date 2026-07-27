@@ -56,16 +56,25 @@ function Get-TlsRpt {
         $TlsRptObject = New-Object System.Collections.Generic.List[System.Object]
     }
     Process {
+
         foreach ($domain in $Name) {
+
+            # Make sure that there are no values in the variables from the previous iteration
+            $TlsRptRecord = $null
+            $TlsRptAdvisory = $null
+
             Write-Verbose "Processing TLSRPT record for domain: $domain"
             if ($OsPlatform -eq "Windows") {
                 $TlsRptRecord = Resolve-DnsName -Type TXT -Name "_smtp._tls.$domain" @SplatParameters | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
+                Write-Verbose "TLSRPT record for domain $($domain): $TlsRptRecord"
             }
             elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
                 $TlsRptRecord = $(dig TXT "_smtp._tls.$domain" +short | Out-String).Trim()
+                Write-Verbose "TLSRPT record for domain $($domain): $TlsRptRecord"
             }
             elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
                 $TlsRptRecord = $(dig TXT "_smtp._tls.$domain" +short $PSBoundParameters.Server | Out-String).Trim()
+                Write-Verbose "TLSRPT record for domain $($domain) using server $($PSBoundParameters.Server): $TlsRptRecord"
             }
 
             if ($null -eq $TlsRptRecord) {
@@ -80,8 +89,6 @@ function Get-TlsRpt {
                     $TlsRptAdvisory = "TLS-RPT Record found, but the 'rua' field is not configured. Consider adding a 'rua' field to receive reports."
                 }
             }
-        }
-        foreach ($domain in $Name) {
 
             $TlsRptReturnValues = New-Object psobject
             $TlsRptReturnValues | Add-Member NoteProperty "Name" $domain
@@ -90,8 +97,8 @@ function Get-TlsRpt {
             $TlsRptObject.Add($TlsRptReturnValues)
             $TlsRptReturnValues
         }
-    } End {
 
-    }
+    } End {}
+
 }
 Set-Alias gtlstps -Value Get-TlsRpt
