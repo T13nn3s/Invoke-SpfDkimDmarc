@@ -23,17 +23,37 @@ Get-DKIMRecord queries DKIM records using a provided selector or a list of commo
 
 ### Example 1
 ```
-PS C:\> Get-DKIMRecord -Name binsec.nl | fl *
+PS C:\> Get-DKIMRecord -Name ing.nl
 
-Name         : binsec.nl
-DkimRecord   : {v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7b7krQw/+b1QOBkbBEW7pMNBLbb7DCEiiLM1YtM0Ekv/VgTLmdZen+m2zzaBrCpm8hnB5WogKeXJ/oE/7qzSvQFNVoOX8o5clWCL+vhnkkr+lAPOJkBJOc/ 
-               asQOPc+xoPd+H86pS50gvqcJy8m0dXAp+aX62Zc2z6DDCsXl4u8QIDAQAB; n=1024,1494259634,1,  510157234}
-DkimSelector : k1
-DKIMAdvisory : DKIM-record found.
+Name                  : ing.nl
+DkimSelectorsDetected : s1, s2, selector1, selector2
+DkimSelector-1        : s1
+DkimRecord-1          : k=rsa; t=s; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApnjC0Fafq6RS+zmVjT6Q9mPL1dVGdB7YKK95q
+                        SvqUUtBedJj9FRJjJAlmCWo+b9ud1zjeilSbFATquehhMJTbmBKbZV55c87h9kTiYEgcgin73v6jX8BZH31V3kjhZhoihkY
+                        xw1dSd+kkpg8sRSjCCUTFpZPuBFeYS+lMb2FJA4lt6Z5jXZZRYJ/Z9E8+LIrg/sI7vNvMJ4tcOB2DWR2H2jwB1BRaL/KAzW
+                        fOU6tiXlSUXz8ySgEpK73QYN5eI5LF9cXI8gGRKhgPsyAMk46D/PzChfM887V/OBENl5WXfdNLIhchx7+3fPr5m4Lp7N30q
+                        pptkUt4DWL8Q0pcZrsOQIDAQAB
+DkimAdvisory-1        : DKIM-record found for selector s1.
+DkimSelector-2        : s2
+DkimRecord-2          : k=rsa; t=s; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCw15owzRl7WtvB+FXW9/0v2Ejq6JLxCLQVkb0bAkNOd
+                        TsyjrcyO2Y9LbJY8hl+vbiyRAwcOL6mRMdp8/9pUG5igkvbgU15X5sN9t2X35vw/PTzniXb2pgRwXky74NLECe69+vgK48h
+                        hfTyt1s2IlQgmszsSH/pGPo8HFF4AzXVlwIDAQAB
+DkimAdvisory-2        : DKIM-record found for selector s2.
+DkimSelector-3        : selector1
+DkimRecord-3          : v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyxRaOKkzswKa19QEg3fjhhg0Uhtq+stkjkdx1X
+                        7MelAGcB71tmxcJKH4iBlnltMLnyrWtfKrChTsrbF7cCpdtMaXjmYVG9zvSx74HUBb223TqMve8K1qBU/sW2I3ZijuP/37H
+                        acBcCmwXSQhe8+kkuGJ1Nq9eojmrdqxjB4QuTQIDAQAB;
+DkimAdvisory-3        : DKIM-record found for selector selector1.
+DkimSelector-4        : selector2
+DkimRecord-4          : v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvDSp8D/42mawgWJauHcYFf77NZzt/lOiP
+                        ITC4+dtX3YM20gVHpazEmWdcef2WkgNSLiEpVkJxqqx8K8QufV1jPxftdg1uUP9lb1wIW2LdxDURdTPKcFPQIitjyxoKFzf
+                        Zvo3zNVC967lAXYHwBOpUwWLFrD7SJzqCZHZUOHrlSwehxnBVFa2YEd2qLAUSJ3TG6O9jdrCicRpvyl6CL/S+lp0uRypdmn
+                        k0adAujCXKLqTmy623JguQDwyS09wjBU4M/jVIpTxvjkd4HdWv02fEMrAFLMxJH+SBkr83oXE7vUxUuqjK6hVXupecszeFO
+                        kP6B0qDv2lddsJywTuUHjqmQIDAQAB;
+DkimAdvisory-4        : DKIM-record found for selector selector2.
 ```
 
-This example resolves the DKIM record for the domain binsec.nl.
-It automatically detects the 'k1' selector.
+This example resolves the all the detected DKIM records for the domain ing.nl. It automatically detected the `s1`, `s2`, `selector1`, and `selector2` selectors.
 
 ### Example 2
 ```
