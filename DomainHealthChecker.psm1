@@ -54,13 +54,13 @@ function Invoke-SpfDkimDmarc {
 
         # Check if there is an update available
         if (!$SkipUpdateCheck) {
-        try {
-            Update-ModuleDomainHealthChecker -Verbose:$False
+            try {
+                Update-ModuleDomainHealthChecker -Verbose:$False
+            }
+            catch {
+                Write-Verbose "No update check could be performed: $_"
+            }
         }
-        catch {
-            Write-Verbose "No update check could be performed: $_"
-        }
-    }
 
         Write-Verbose "Starting $($MyInvocation.MyCommand)"
         $PSBoundParameters | Out-String | Write-Verbose
@@ -94,6 +94,7 @@ function Invoke-SpfDkimDmarc {
 
         # If 'File' parameter is used
         if ($PSBoundParameters.ContainsKey('File')) {
+            Write-Progress -Activity "Querying SPF, DKIM, DMARC, MTA-STS, BIMI, DNSSEC and TLS-RPT records" -Status "Processing domains..." -PercentComplete 0
             foreach ($Name in (Get-Content -Path $File)) {
                 $SPF = Get-SPFRecord -Name $Name @Splat
                 $DKIM = Get-DKIMRecord -Name $Name @Splat @DKIMSplat
@@ -101,6 +102,7 @@ function Invoke-SpfDkimDmarc {
                 $MTASTS = Invoke-MtaSTS -Name $Name @Splat
                 $BIMI = Get-BimiRecord -Name $Name @Splat
                 $DNSSEC = Get-DNSSec -Name $Name @Splat
+                $TlsRPT = Get-TlsRpt -Name $Name @Splat
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -110,14 +112,39 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" $SPF.SPFRecordDnsLookupCount
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
-                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+
+                if ($DKIM.DkimSelectorsDetected -is [string] -and -not [string]::IsNullOrEmpty($DKIM.DkimSelectorsDetected)) {
+                    write-verbose "Invoke-SpfDkimDmarc: Detected multiple DKIM selectors for domain $($SPF.Name): $($DKIM.DkimSelectorsDetected)"
+                    $DkimSelectors = $DKIM.DkimSelectorsDetected -split ', '
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" $DKIM.DkimSelectorsDetected
+                    for ($i = 0; $i -lt $DkimSelectors.Count; $i++) {
+                        $index = $i + 1
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimSelector-$index" $DkimSelectors[$i]
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimRecord-$index" $DKIM."DkimRecord-$index"
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory-$index" "DKIM-record found for selector $($DkimSelectors[$i])."
+                    }
+                }
+                elseif ($DKIM.DkimSelector -is [string] -and -not [string]::IsNullOrEmpty($DKIM.DkimSelector)) {
+                    Write-verbose "Invoke-SpfDkimDmarc: Detected DKIM selector for domain $($SPF.Name): $($DKIM.DkimSelector)"
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $DKIM.DkimRecord
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+                else {
+                    Write-verbose "Invoke-SpfDkimDmarc: No DKIM selector detected for domain $($SPF.Name)."
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
                 $InvokeReturnValues | Add-Member NoteProperty "BimiAdvisory" $BIMI.BimiAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptRecord" $TlsRPT.TlsRptRecord
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptAdvisory" $TlsRPT.TlsRptAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
@@ -125,6 +152,7 @@ function Invoke-SpfDkimDmarc {
 
         # If 'Name' parameter is used
         if ($PSBoundParameters.ContainsKey('Name')) {
+            Write-Progress -Activity "Querying SPF, DKIM, DMARC, MTA-STS, BIMI, DNSSEC and TLS-RPT records" -Status "Processing domains..." -PercentComplete 0
             foreach ($domain in $Name) {
                 $SPF = Get-SPFRecord -Name $domain @Splat
                 $DKIM = Get-DKIMRecord -Name $domain @Splat @DKIMSplat
@@ -132,6 +160,7 @@ function Invoke-SpfDkimDmarc {
                 $MTASTS = Invoke-MtaSTS -Name $domain @Splat
                 $DNSSEC = Get-DNSSec -Name $domain @Splat
                 $BIMI = Get-BimiRecord -Name $domain @Splat
+                $TlsRPT = Get-TlsRpt -Name $domain @Splat
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -141,15 +170,39 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "SPFRecordDnsLookupCount" $SPF.SPFRecordDnsLookupCount
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcRecord" $DMARC.DmarcRecord
                 $InvokeReturnValues | Add-Member NoteProperty "DmarcAdvisory" $DMARC.DmarcAdvisory
-                $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" "$($DKIM.DkimRecord)"
-                $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
-                $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+
+                if ($DKIM.DkimSelectorsDetected -is [string] -and -not [string]::IsNullOrEmpty($DKIM.DkimSelectorsDetected)) {
+                    write-verbose "Invoke-SpfDkimDmarc: Detected multiple DKIM selectors for domain $($SPF.Name): $($DKIM.DkimSelectorsDetected)"
+                    $DkimSelectors = $DKIM.DkimSelectorsDetected -split ', '
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelectorsDetected" $DKIM.DkimSelectorsDetected
+                    for ($i = 0; $i -lt $DkimSelectors.Count; $i++) {
+                        $index = $i + 1
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimSelector-$index" $DkimSelectors[$i]
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimRecord-$index" $DKIM."DkimRecord-$index"
+                        $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory-$index" "DKIM-record found for selector $($DkimSelectors[$i])."
+                    }
+                }
+                elseif ($DKIM.DkimSelector -is [string] -and -not [string]::IsNullOrEmpty($DKIM.DkimSelector)) {
+                    Write-verbose "Invoke-SpfDkimDmarc: Detected DKIM selector for domain $($SPF.Name): $($DKIM.DkimSelector)"
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $DKIM.DkimSelector
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $DKIM.DkimRecord
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+                else {
+                    Write-verbose "Invoke-SpfDkimDmarc: No DKIM selector detected for domain $($SPF.Name)."
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimRecord" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimSelector" $null
+                    $InvokeReturnValues | Add-Member NoteProperty "DkimAdvisory" $DKIM.DkimAdvisory
+                }
+
                 $InvokeReturnValues | Add-Member NoteProperty "MtaRecord" $MTASTS.mtaRecord
                 $InvokeReturnValues | Add-Member NoteProperty "MtaAdvisory" $MTASTS.mtaAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "BimiRecord" "$($BIMI.BimiRecord)"
                 $InvokeReturnValues | Add-Member NoteProperty "BimiAdvisory" $BIMI.BimiAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSec" $DNSSEC.DNSSEC
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptRecord" $TlsRPT.TlsRptRecord
+                $InvokeReturnValues | Add-Member NoteProperty "TlsRptAdvisory" $TlsRPT.TlsRptAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
