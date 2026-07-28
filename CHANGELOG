@@ -6,7 +6,7 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
-[2.2] - XX-7-2026
+[2.2] - 28-7-2026
 
 ### Added
 - Added `Get-TlsRpt` for checking the TLS-RPT DNS record (#55)
