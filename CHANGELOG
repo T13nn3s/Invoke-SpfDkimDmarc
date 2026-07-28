@@ -6,6 +6,21 @@ All notable updates on the module will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+[2.2] - 28-7-2026
+
+### Added
+- Added `Get-TlsRpt` for checking the TLS-RPT DNS record (#55)
+
+### Updated
+- Updated the `Get-DKIMRecord` function for adding support for multi selector checking (#57)
+
+### Fixed
+- The DKIM-record output in CNAME in `Get-DKIMRecord` got truncated in Windows.
+
+### Changed
+- Extended the `DkimSelectors` list in the `Get-DKIMRecord` function
+- Updated README/help docs
+
 [2.1] - 28-1-2026
 
 ### Added
@@ -32,14 +47,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 [1.8.0] - 28-5-2025
 ### Added 
-- Add SPF DNS-Lookup check (#16)
+- Add SPF DNS-Lookup check (#16).
 
 ### Fixed
-- Path with spaces not supported (#50)
+- Path with spaces not supported (#50).
 
 [1.7.1] - 18-12-2024
 ### Fixed
-- Error when no SPFrecords are present (#48)
+- Error when no SPFrecords are present (#48).
 
 [1.7] - 9-11-2024
 ### Added

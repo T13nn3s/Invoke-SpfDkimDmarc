@@ -91,4 +91,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [Get-DMARCRecord is part of the 'DomainHealthChecker' module, available on the PowerShellGallery](https://www.powershellgallery.com/packages/DomainHealthChecker/)
 
-[Project site on Github](github.com/T13nn3s/Invoke-SpfDkimDmarc/)
+[Project site on Github](https://www.github.com/T13nn3s/Invoke-SpfDkimDmarc/)
