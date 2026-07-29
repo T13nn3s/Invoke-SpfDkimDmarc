@@ -1,7 +1,7 @@
 ---
 external help file: DomainHealthChecker-help.xml
 Module Name: DomainHealthChecker
-online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-BIMIecord.md
+online version: https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/public/CmdletHelp/Get-CAARecord.md
 schema: 2.0.0
 ---
 
