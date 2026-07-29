@@ -103,6 +103,7 @@ function Invoke-SpfDkimDmarc {
                 $BIMI = Get-BimiRecord -Name $Name @Splat
                 $DNSSEC = Get-DNSSec -Name $Name @Splat
                 $TlsRPT = Get-TlsRpt -Name $Name @Splat
+                $CAA = Get-CAARecord -Name $Name
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -145,6 +146,8 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "TlsRptRecord" $TlsRPT.TlsRptRecord
                 $InvokeReturnValues | Add-Member NoteProperty "TlsRptAdvisory" $TlsRPT.TlsRptAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "CaaRecord" $CAA.CaaRecord
+                $InvokeReturnValues | Add-Member NoteProperty "CaaAdvisory" $CAA.CaaAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }
@@ -161,6 +164,7 @@ function Invoke-SpfDkimDmarc {
                 $DNSSEC = Get-DNSSec -Name $domain @Splat
                 $BIMI = Get-BimiRecord -Name $domain @Splat
                 $TlsRPT = Get-TlsRpt -Name $domain @Splat
+                $CAA = Get-CAARecord -Name $domain
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
@@ -203,6 +207,8 @@ function Invoke-SpfDkimDmarc {
                 $InvokeReturnValues | Add-Member NoteProperty "DnsSecAdvisory" $DNSSEC.DnsSecAdvisory
                 $InvokeReturnValues | Add-Member NoteProperty "TlsRptRecord" $TlsRPT.TlsRptRecord
                 $InvokeReturnValues | Add-Member NoteProperty "TlsRptAdvisory" $TlsRPT.TlsRptAdvisory
+                $InvokeReturnValues | Add-Member NoteProperty "CaaRecord" $CAA.CaaRecord
+                $InvokeReturnValues | Add-Member NoteProperty "CaaAdvisory" $CAA.CaaAdvisory
                 $InvokeObject.Add($InvokeReturnValues)
                 $InvokeReturnValues
             }

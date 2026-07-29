@@ -30,7 +30,7 @@ CompanyName = ''
 Copyright = '(c) Martien van Dijk. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell module for checking SPF, DKIM, and DMARC records for one or multiple domains. This module also checks for the existence of MTA-STS and whether DNSSEC is configured. This module supports Windows, Linux, and macOS platforms with PowerShell Core.'
+Description = 'PowerShell module for checking SPF, DKIM, DMARC, BIMI, MTA-STS, TLS-RPT and CAA records for one or multiple domains. This module supports Windows, Linux, and macOS platforms with PowerShell Core.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -70,7 +70,7 @@ PowerShellVersion = '5.1'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-SpfDkimDmarc', 'Get-SPFRecord', 'Get-DKIMRecord', 
-               'Get-DMARCRecord', 'Get-DNSSEC', 'Invoke-MtaSts', 'Get-BimiRecord','Get-TlsRpt', 'Update-ModuleDomainHealthChecker'
+               'Get-DMARCRecord', 'Get-DNSSEC', 'Invoke-MtaSts', 'Get-BimiRecord','Get-TlsRpt', 'Get-CAARecord', 'Update-ModuleDomainHealthChecker'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
@@ -97,7 +97,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'Email','Emailsecurity','Security','SPF','DKIM','DMARC','DNSSEC','MTA-STS','TLS-RPT','BIMI','DomainHealth','DomainHealthChecker'
+        Tags = 'Email','Emailsecurity','Security','SPF','DKIM','DMARC','DNSSEC','MTA-STS','TLS-RPT','BIMI','CAA','DomainHealth','DomainHealthChecker'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/T13nn3s/Invoke-SpfDkimDmarc/blob/main/LICENSE'

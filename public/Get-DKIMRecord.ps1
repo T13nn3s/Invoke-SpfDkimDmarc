@@ -194,6 +194,7 @@ function Get-DKIMRecord {
                     $DKIM = $DKIM -split '" "' -join ""
 
                     if ($null -eq $DKIM) {
+                        $Dkim
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
                     elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
@@ -287,8 +288,9 @@ function Get-DKIMRecord {
             }
             elseif ($FoundDkimSelectors.Count -eq 0) {
                 Write-Verbose "No DKIM-record found for $dkimSelector._domainkey.$domain"
-                $DkimReturnValues | Add-Member NoteProperty "DkimRecord" $null
-                $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $null
+                $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
+                $DkimReturnValues | Add-Member NoteProperty "DkimRecord" "No DKIM-record found."
+                $DkimReturnValues | Add-Member NoteProperty "DkimSelector" $DkimSelector
                 $DkimReturnValues | Add-Member NoteProperty "DkimAdvisory" $DkimAdvisory
             }
             else {
