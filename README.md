@@ -139,7 +139,7 @@ CaaRecord               : CAA record found, allowed CAs: .
 CaaAdvisory             : CAA record found and IODEF not configured. Consider adding an IODEF contact to the CAA record to receive notifications.
 ```
 
-Checks the SPF, DMARC, DKIM, Mta, TLS-RPT, DNSSEC, and DNS CAA configuration for the domains binsec.nl and microsoft.nl.
+Checks the SPF, DMARC, DKIM, Mta, TLS-RPT, DNSSEC, and DNS CAA configuration for the domains binsec.nl and microsoft.com.
 
 ### Example 3
 ```powershell
