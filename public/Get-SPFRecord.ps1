@@ -66,11 +66,11 @@ function Get-SPFRecord {
                 $SPF = Resolve-DnsName -Name $domain -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
             }
             Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux") {
-                $SPF = $(dig TXT $domain +short | grep "v=spf1" | Out-String)
+                $SPF = $(dig TXT $domain +short | grep "v=spf1" | Out-String).Trim()
                 $SPF = $SPF -split '" "' -join ""
             }
             Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
-                $SPF = $(dig TXT $domain +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                $SPF = $(dig TXT $domain +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String).Trim()
                 $SPF = $SPF -split '" "' -join ""
             }
             
@@ -82,11 +82,11 @@ function Get-SPFRecord {
                     $SPF = Resolve-DnsName -Name "$RedirectName" -Type TXT @SplatParameters | where-object { $_.strings -match "v=spf1" } | Select-Object -ExpandProperty strings -ErrorAction SilentlyContinue
                 }
                 elseif ($OsPlatform -eq "macOS" -or $POslatform -eq "Linux") {
-                    $SPF = $(dig TXT $RedirectName +short | grep "v=spf1" | Out-String)
+                    $SPF = $(dig TXT $RedirectName +short | grep "v=spf1" | Out-String).Trim()
                     $SPF = $SPF -split '" "' -join ""
                 }
                 Elseif ($OsPlatform -eq "macOS" -or $OsPlatform -eq "Linux" -and $Server) {
-                    $SPF = $(dig TXT $RedirectName +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String)
+                    $SPF = $(dig TXT $RedirectName +short NS @$SplatParameters.Server | grep "v=spf1" | Out-String).Trim()
                     $SPF = $SPF -split '" "' -join ""
                 }
             }
