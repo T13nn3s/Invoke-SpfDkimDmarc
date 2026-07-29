@@ -43,11 +43,12 @@ function Get-CAARecord {
                     $ApiResponse.Answer | ForEach-Object {
                         $CAAValues = Convert-CaaRdata $_.data
                         Write-verbose "Converted CAA record for $($domain): $($CAAValues.Value)"
-                        $AllowedCas += $CAAValues.Value -join ", " | Where-Object {$CAAValues.Tag -eq "issue" -or $CAAValues.Tag -eq "issuewild"}
+                        $FilteredCas = $CAAValues | Where-Object {$_.Tag -in @("issue", "issuewild")}
+                        $AllowedCas += ($FilteredCas.Value -join ", ")
                         $iodef += $CAAValues.Value -join ", " | Where-Object {$CAAValues.Tag -eq "iodef"}
                     }
                     if ($CAAValues) {
-                        $CAARecord = "CAA record found, allowed CAs: $AllowedCas"
+                        $CAARecord = "CAA record found, allowed CAs: $($AllowedCas -join ', ')."
                         if ($iodef) {
                             Write-verbose "CAA record found with IODEF contact information: $iodef"
                             $CAAAdvisory = "CAA record found with IODEF contact information: $iodef"

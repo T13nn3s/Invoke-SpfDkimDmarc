@@ -164,7 +164,7 @@ function Invoke-SpfDkimDmarc {
                 $DNSSEC = Get-DNSSec -Name $domain @Splat
                 $BIMI = Get-BimiRecord -Name $domain @Splat
                 $TlsRPT = Get-TlsRpt -Name $domain @Splat
-                $CAA = Get-CAARecord -Name $Name
+                $CAA = Get-CAARecord -Name $domain
 
                 $InvokeReturnValues = New-Object psobject
                 $InvokeReturnValues | Add-Member NoteProperty "Name" $SPF.Name
