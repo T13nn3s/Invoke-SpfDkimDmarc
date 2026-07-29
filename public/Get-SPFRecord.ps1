@@ -96,7 +96,7 @@ function Get-SPFRecord {
             $SPFCount = ($SPF -match $RecipientServer).count
             
             # If there is no SPF record 
-            if ($null -eq $SPF) {
+            if ($null -eq $SPF -or $SPF -eq "") {
                 $SpfAdvisory = "Domain does not have an SPF record. To prevent abuse of this domain, please add an SPF record to it."
             }
             elseif ($SPFCount -gt 1) {

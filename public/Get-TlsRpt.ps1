@@ -77,7 +77,8 @@ function Get-TlsRpt {
                 Write-Verbose "TLSRPT record for domain $($domain) using server $($PSBoundParameters.Server): $TlsRptRecord"
             }
 
-            if ($null -eq $TlsRptRecord) {
+            if ($null -eq $TlsRptRecord -or $TlsRptRecord -eq "") {
+                Write-Verbose "No TLS-RPT Record found for domain $($domain)"
                 $TlsRptRecord = "No TLS-RPT Record found."
                 $TlsRptAdvisory = "No TLS-RPT Record found. Consider configuring a TLS-RPT record for this domain, to receive reports."
             }

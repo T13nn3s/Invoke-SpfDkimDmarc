@@ -37,19 +37,25 @@ function Get-CAARecord {
             try {
                 $ApiResponse = Invoke-RestMethod -Uri "https://cloudflare-dns.com/dns-query?name=$domain&type=CAA" -Headers @{ "accept" = "application/dns-json" }
                 $AllowedCas = @()
-                $null = $iodef =
+                $iodefValues = @()
                 if ($ApiResponse.Answer) {
                     Write-verbose "CAA record found for $($domain): $($ApiResponse.Answer | ForEach-Object { $_.data })"
-                    $ApiResponse.Answer | ForEach-Object {
-                        $CAAValues = Convert-CaaRdata $_.data
+                    foreach ($answer in $ApiResponse.Answer) {
+                        $CAAValues = Convert-CaaRdata $answer.data
                         Write-verbose "Converted CAA record for $($domain): $($CAAValues.Value)"
-                        $FilteredCas = $CAAValues | Where-Object {$_.Tag -in @("issue", "issuewild")}
-                        $AllowedCas += ($FilteredCas.Value -join ", ")
-                        $iodef += $CAAValues.Value -join ", " | Where-Object {$CAAValues.Tag -eq "iodef"}
+
+                        if ($CAAValues.Tag -in @("issue", "issuewild") -and $CAAValues.Value) {
+                            $AllowedCas += $CAAValues.Value
+                        }
+                        elseif ($CAAValues.Tag -eq "iodef" -and $CAAValues.Value) {
+                            $iodefValues += $CAAValues.Value
+                        }
                     }
-                    if ($CAAValues) {
+
+                    if ($AllowedCas.Count -gt 0 -or $iodefValues.Count -gt 0) {
                         $CAARecord = "CAA record found, allowed CAs: $($AllowedCas -join ', ')."
-                        if ($iodef) {
+                        if ($iodefValues.Count -gt 0) {
+                            $iodef = $iodefValues -join ', '
                             Write-verbose "CAA record found with IODEF contact information: $iodef"
                             $CAAAdvisory = "CAA record found with IODEF contact information: $iodef"
                         }

@@ -122,7 +122,7 @@ function Get-BIMIRecord {
                     $null = $DmarcPolicy
                 } 
             
-                if ($null -eq $DmarcPolicy) {
+                if ($null -eq $DmarcPolicy -or $DmarcPolicy -eq "") {
                     Write-Verbose "No DMARC record found for $domain"
                     $BimiAdvisory = "Does not have a DMARC record. To use BIMI, this domain must have a DMARC record with a policy of at least p=quarantine and pct=100."
                 }

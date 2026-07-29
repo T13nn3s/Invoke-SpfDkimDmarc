@@ -193,7 +193,7 @@ function Get-DKIMRecord {
                     $DKIM = $DKIMStrings -join ""
                     $DKIM = $DKIM -split '" "' -join ""
 
-                    if ($null -eq $DKIM) {
+                    if ($null -eq $DKIM -or $DKIM -eq "") {
                         $Dkim
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
@@ -208,7 +208,7 @@ function Get-DKIMRecord {
                         $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
                         $DKIM = $DKIMStrings -join ""
                     }
-                    if ($null -eq $DKIM) {
+                    if ($null -eq $DKIM -or $DKIM -eq "") {
                         $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                     }
                     elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
@@ -243,7 +243,7 @@ function Get-DKIMRecord {
                         }
                         $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
                         $DKIM = $DKIMStrings -join ""
-                        if ($null -eq $DKIM) {
+                        if ($null -eq $DKIM -or $DKIM -eq "") {
                             $DkimAdvisory = "No DKIM-record found for selector $($DkimSelector)._domainkey.$($domain)"
                         }
                         elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {
@@ -259,7 +259,7 @@ function Get-DKIMRecord {
                             $DKIMStrings = $DKIM | Select-Object -ExpandProperty Strings -ErrorAction SilentlyContinue
                             $DKIM = $DKIMStrings -join ""
                         }
-                        if ($null -eq $DKIM) {
+                        if ($null -eq $DKIM -or $DKIM -eq "") {
                             $DkimAdvisory = "We couldn't find a DKIM record associated with your domain."
                         }
                         elseif ($DKIM -match "v=DKIM1" -or $DKIM -match "k=") {

@@ -72,7 +72,7 @@ function Get-DMARCRecord {
                 $DMARC = $(dig TXT "_dmarc.$($domain)" +short NS $PSBoundParameters.Server | Out-String).Trim()
             }
             
-            if ($null -eq $DMARC) {
+            if ($null -eq $DMARC -or $DMARC -eq "") {
                 Write-Verbose "No DMARC record found for $domain"
                 $DmarcAdvisory = "Does not have a DMARC record. This domain is at risk to being abused by phishers and spammers."
             }
