@@ -79,7 +79,7 @@ CmdletsToExport = '*'
 VariablesToExport = '*'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'isdd', 'isdd', 'gspf', 'gdkim', 'gdmarc', 'gdnssec', 'gmts', 'gbimi'
+AliasesToExport = 'isdd', 'isdd', 'gspf', 'gdkim', 'gdmarc', 'gdnssec', 'gmts', 'gbimi','gtlstps', 'gcaa'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
